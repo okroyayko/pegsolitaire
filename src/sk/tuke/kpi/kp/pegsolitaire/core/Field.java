@@ -1,4 +1,8 @@
-package sk.tuke.kpi.kp.pegsolitaire.consoleui;
+package sk.tuke.kpi.kp.pegsolitaire.core;
+
+
+import sk.tuke.kpi.kp.pegsolitaire.core.GameState;
+import sk.tuke.kpi.kp.pegsolitaire.core.Tile;
 
 public class Field {
     private int rowCount;
@@ -27,20 +31,5 @@ public class Field {
 
     public boolean isSolved() {
         return false;
-=======
-import sk.tuke.kpi.kp.pegsolitaire.core.Field;
-
-public class ConsoleUI {
-    private Field field;
-
-    public ConsoleUI(Field field) {
-        this.field = field;
-    }
-
-    public void play() {
-    }
-
-    public void show() {
->>>>>>> 075ca0a04e97c6941657fb4d0abad88c445bf23f
     }
 }
