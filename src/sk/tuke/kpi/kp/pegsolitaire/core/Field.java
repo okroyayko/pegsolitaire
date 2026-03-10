@@ -2,16 +2,32 @@ package sk.tuke.kpi.kp.pegsolitaire.consoleui;
 
 import sk.tuke.kpi.kp.pegsolitaire.core.Field;
 
-public class ConsoleUI {
-    private Field field;
+public class Field {
+    private int rowCount;
+    private int columnCount;
+    private Tile[][] tiles;
+    private GameState gameState;
 
-    public ConsoleUI(Field field) {
-        this.field = field;
+    public Field(int rows, int columns) {
+        this.rowCount = rows;
+        this.columnCount = columns;
+        this.tiles = new Tile[rows][columns];
+        this.gameState = GameState.PLAYING;
     }
 
-    public void play() {
+    public void readFile(String filename) {
     }
 
-    public void show() {
+    public boolean isMoveAllowed(int r1, int c1, int r2, int c2) {
+        return false;
+    }
+
+    public void move(int r1, int c1, int r2, int c2) {
+        if (isMoveAllowed(r1, c1, r2, c2)) {
+        }
+    }
+
+    public boolean isSolved() {
+        return false;
     }
 }
