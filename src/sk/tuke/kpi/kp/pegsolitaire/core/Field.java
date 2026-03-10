@@ -1,6 +1,8 @@
-package sk.tuke.kpi.kp.pegsolitaire.consoleui;
+package sk.tuke.kpi.kp.pegsolitaire.core;
 
-import sk.tuke.kpi.kp.pegsolitaire.core.Field;
+
+import sk.tuke.kpi.kp.pegsolitaire.core.GameState;
+import sk.tuke.kpi.kp.pegsolitaire.core.Tile;
 
 public class Field {
     private int rowCount;
