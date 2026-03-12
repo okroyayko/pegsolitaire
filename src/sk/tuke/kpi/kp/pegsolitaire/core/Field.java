@@ -31,26 +31,38 @@ public class Field {
             int row = 0;
 
             while ((line = reader.readLine()) != null && row < rowCount) {
-                for (int col = 0; col < Math.min(line.length(), columnCount); col++) {
-                    char ch = line.charAt(col);
+
+                for (int col = 0; col < columnCount; col++) {
                     TileState state;
-                    switch (ch) {
-                        case 'X':
-                            state = TileState.BLOCKED;
-                            break;
-                        case 'O':
-                            state = TileState.PEG;
-                            break;
-                        case '.':
-                            state = TileState.EMPTY;
-                            break;
-                        default:
-                            state = TileState.BLOCKED;
+
+                    if (col < line.length()) {
+                        char ch = line.charAt(col);
+                        switch (ch) {
+                            case 'X': state = TileState.BLOCKED; break;
+                            case 'O': state = TileState.PEG; break;
+                            case '.': state = TileState.EMPTY; break;
+                            case ' ': state = TileState.BLOCKED; break;
+                            default:  state = TileState.BLOCKED;
+                        }
+                    } else {
+                        // Якщо символів у рядку менше — BLOCKED
+                        state = TileState.BLOCKED;
                     }
+
                     tiles[row][col] = new Tile(state);
+                }
+
+                row++;
+            }
+
+            // Якщо рядків менше — заповнюємо BLOCKED
+            while (row < rowCount) {
+                for (int col = 0; col < columnCount; col++) {
+                    tiles[row][col] = new Tile(TileState.BLOCKED);
                 }
                 row++;
             }
+
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
