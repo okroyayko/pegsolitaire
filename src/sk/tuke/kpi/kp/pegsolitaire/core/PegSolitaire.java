@@ -1,12 +1,10 @@
-package sk.tuke.kpi.kp.pegsolitaire.core;
+package sk.tuke.kpi.kp.pegsolitaire;
 
 import sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI;
 
 public class PegSolitaire {
     public static void main(String[] args) {
-        Field field = new Field(7, 7);
-        field.readFile("board.txt");
-        ConsoleUI ui = new ConsoleUI(field);
-        ui.play();
+        ConsoleUI ui = new ConsoleUI();
+        ui.menu();
     }
 }
