@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Field {
-    private int rowCount;
-    private int columnCount;
-    private Tile[][] tiles;
+    private final int rowCount;
+    private final int columnCount;
+    private final Tile[][] tiles;
     private GameState gameState;
 
     public Field(int rowCount, int columnCount) {
@@ -16,6 +16,22 @@ public class Field {
         this.columnCount = columnCount;
         this.tiles = new Tile[rowCount][columnCount];
         this.gameState = GameState.PLAYING;
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public int getColumnCount() {
+        return columnCount;
+    }
+
+    public Tile getTile(int row, int col) {
+        return tiles[row][col];
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 
     public void readFile(String filename) {
@@ -31,7 +47,6 @@ public class Field {
             int row = 0;
 
             while ((line = reader.readLine()) != null && row < rowCount) {
-
                 for (int col = 0; col < columnCount; col++) {
                     TileState state;
 
@@ -39,23 +54,20 @@ public class Field {
                         char ch = line.charAt(col);
                         switch (ch) {
                             case 'X': state = TileState.BLOCKED; break;
-                            case 'O': state = TileState.PEG; break;
-                            case '.': state = TileState.EMPTY; break;
+                            case 'O': state = TileState.PEG;     break;
+                            case '.': state = TileState.EMPTY;   break;
                             case ' ': state = TileState.BLOCKED; break;
                             default:  state = TileState.BLOCKED;
                         }
                     } else {
-                        // Якщо символів у рядку менше — BLOCKED
                         state = TileState.BLOCKED;
                     }
 
                     tiles[row][col] = new Tile(state);
                 }
-
                 row++;
             }
 
-            // Якщо рядків менше — заповнюємо BLOCKED
             while (row < rowCount) {
                 for (int col = 0; col < columnCount; col++) {
                     tiles[row][col] = new Tile(TileState.BLOCKED);
@@ -68,26 +80,85 @@ public class Field {
         }
     }
 
+
     public boolean isMoveAllowed(int r1, int c1, int r2, int c2) {
-        return false;
+        if (!isInside(r1, c1) || !isInside(r2, c2)) return false;
+
+        Tile start = tiles[r1][c1];
+        Tile end = tiles[r2][c2];
+
+        if (start.getState() != TileState.PEG) return false;
+        if (end.getState() != TileState.EMPTY) return false;
+
+        int dr = r2 - r1;
+        int dc = c2 - c1;
+
+        if (!((Math.abs(dr) == 2 && dc == 0) || (Math.abs(dc) == 2 && dr == 0))) {
+            return false;
+        }
+
+        int midR = (r1 + r2) / 2;
+        int midC = (c1 + c2) / 2;
+
+        Tile middle = tiles[midR][midC];
+        return middle.getState() == TileState.PEG;
     }
+
 
     public void move(int r1, int c1, int r2, int c2) {
+        if (!isMoveAllowed(r1, c1, r2, c2)) {
+            return;
+        }
+
+        int midR = (r1 + r2) / 2;
+        int midC = (c1 + c2) / 2;
+
+        tiles[r1][c1].setState(TileState.EMPTY);
+        tiles[midR][midC].setState(TileState.EMPTY);
+        tiles[r2][c2].setState(TileState.PEG);
+
+        updateGameState();
     }
+
 
     public boolean isSolved() {
-        return false;
+        int pegCount = 0;
+        for (int r = 0; r < rowCount; r++) {
+            for (int c = 0; c < columnCount; c++) {
+                if (tiles[r][c].getState() == TileState.PEG) {
+                    pegCount++;
+                    if (pegCount > 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return pegCount == 1;
     }
 
-    public int getRowCount() {
-        return rowCount;
+    private void updateGameState() {
+        if (isSolved()) {
+            gameState = GameState.SOLVED;
+            return;
+        }
+
+
+        for (int r = 0; r < rowCount; r++) {
+            for (int c = 0; c < columnCount; c++) {
+                if (tiles[r][c].getState() == TileState.PEG) {
+                    // пробуємо всі 4 напрямки
+                    if (isMoveAllowed(r, c, r - 2, c)) return;
+                    if (isMoveAllowed(r, c, r + 2, c)) return;
+                    if (isMoveAllowed(r, c, r, c - 2)) return;
+                    if (isMoveAllowed(r, c, r, c + 2)) return;
+                }
+            }
+        }
+
+        gameState = GameState.FAILED;
     }
 
-    public int getColumnCount() {
-        return columnCount;
-    }
-
-    public Tile getTile(int row, int col) {
-        return tiles[row][col];
+    private boolean isInside(int r, int c) {
+        return r >= 0 && r < rowCount && c >= 0 && c < columnCount;
     }
 }
