@@ -47,11 +47,25 @@ public class Field {
                     if (col < line.length()) {
                         char ch = line.charAt(col);
                         switch (ch) {
+<<<<<<< HEAD
                             case 'X': state = TileState.BLOCKED; break;
                             case 'O': state = TileState.PEG; break;
                             case '.': state = TileState.EMPTY; break;
                             case ' ': state = TileState.BLOCKED; break;
                             default:  state = TileState.BLOCKED;
+=======
+                            case 'X':
+                                state = TileState.PEG;
+                                break;
+                            case 'O':
+                                state = TileState.EMPTY;
+                                break;
+                            case ' ':
+                                state = TileState.BLOCKED;
+                                break;
+                            default:
+                                state = TileState.BLOCKED;
+>>>>>>> 784c9fb (v1)
                         }
                     } else {
                         state = TileState.BLOCKED;
@@ -72,7 +86,6 @@ public class Field {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
-
 
     public boolean isMoveAllowed(int r1, int c1, int r2, int c2) {
         if (!isInside(r1, c1) || !isInside(r2, c2)) return false;
@@ -97,9 +110,9 @@ public class Field {
         return middle.getState() == TileState.PEG;
     }
 
-
     public void move(int r1, int c1, int r2, int c2) {
         if (!isMoveAllowed(r1, c1, r2, c2)) {
+            System.out.println("Move not allowed");
             return;
         }
 
@@ -113,16 +126,13 @@ public class Field {
         updateGameState();
     }
 
-
     public boolean isSolved() {
         int pegCount = 0;
         for (int r = 0; r < rowCount; r++) {
             for (int c = 0; c < columnCount; c++) {
                 if (tiles[r][c].getState() == TileState.PEG) {
                     pegCount++;
-                    if (pegCount > 1) {
-                        return false;
-                    }
+                    if (pegCount > 1) return false;
                 }
             }
         }
@@ -135,11 +145,9 @@ public class Field {
             return;
         }
 
-
         for (int r = 0; r < rowCount; r++) {
             for (int c = 0; c < columnCount; c++) {
                 if (tiles[r][c].getState() == TileState.PEG) {
-                    // пробуємо всі 4 напрямки
                     if (isMoveAllowed(r, c, r - 2, c)) return;
                     if (isMoveAllowed(r, c, r + 2, c)) return;
                     if (isMoveAllowed(r, c, r, c - 2)) return;
