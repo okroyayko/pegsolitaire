@@ -1,4 +1,4 @@
-package sk.tuke.kpi.kp.pegsolitaire.core;
+package sk.tuke.kpi.kp.pegsolitaire;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,96 +6,72 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Field {
-    private final int rowCount;
-    private final int columnCount;
-    private final Tile[][] tiles;
-    private GameState gameState;
 
-    public Field(int rowCount, int columnCount) {
-        this.rowCount = rowCount;
-        this.columnCount = columnCount;
-        this.tiles = new Tile[rowCount][columnCount];
-        this.gameState = GameState.PLAYING;
+    private final Tile[][] tiles;
+    private final int rows;
+    private final int cols;
+
+    public Field(String levelFile) {
+        this.rows = 7;
+        this.cols = 7;
+        this.tiles = new Tile[rows][cols];
+        loadLevel(levelFile);
     }
 
     public int getRowCount() {
-        return rowCount;
+        return rows;
     }
 
     public int getColumnCount() {
-        return columnCount;
+        return cols;
     }
 
-    public Tile getTile(int row, int col) {
-        return tiles[row][col];
+    public Tile getTile(int r, int c) {
+        return tiles[r][c];
     }
 
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    public void readFile(String filename) {
-        java.nio.file.Path path = java.nio.file.Paths.get("src/sk/tuke/kpi/kp/pegsolitaire", filename);
-
-        try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(path)) {
-            String line;
-            int row = 0;
-
-            while ((line = reader.readLine()) != null && row < rowCount) {
-                for (int col = 0; col < columnCount; col++) {
-                    TileState state;
-                    if (col < line.length()) {
-                        char ch = line.charAt(col);
-                        switch (ch) {
-<<<<<<< HEAD
-                            case 'X': state = TileState.BLOCKED; break;
-                            case 'O': state = TileState.PEG; break;
-                            case '.': state = TileState.EMPTY; break;
-                            case ' ': state = TileState.BLOCKED; break;
-                            default:  state = TileState.BLOCKED;
-=======
-                            case 'X':
-                                state = TileState.PEG;
-                                break;
-                            case 'O':
-                                state = TileState.EMPTY;
-                                break;
-                            case ' ':
-                                state = TileState.BLOCKED;
-                                break;
-                            default:
-                                state = TileState.BLOCKED;
->>>>>>> 784c9fb (v1)
-                        }
-                    } else {
-                        state = TileState.BLOCKED;
-                    }
-                    tiles[row][col] = new Tile(state);
-                }
-                row++;
+    private void loadLevel(String filename) {
+        try {
+            InputStream is = getClass().getResourceAsStream(filename);
+            if (is == null) {
+                throw new RuntimeException("Level file not found: " + filename);
             }
 
-            while (row < rowCount) {
-                for (int col = 0; col < columnCount; col++) {
-                    tiles[row][col] = new Tile(TileState.BLOCKED);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            for (int r = 0; r < rows; r++) {
+                String line = br.readLine();
+                if (line == null) break;
+
+                for (int c = 0; c < cols; c++) {
+                    char ch = (c < line.length()) ? line.charAt(c) : ' ';
+
+                    TileState state = switch (ch) {
+                        case 'X' -> TileState.PEG;      
+                        case 'O' -> TileState.EMPTY;    
+                        case ' ' -> TileState.BLOCKED;  
+                        default -> TileState.BLOCKED;
+                    };
+
+                    tiles[r][c] = new Tile(state);
                 }
-                row++;
             }
 
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            throw new RuntimeException("Error reading level file", e);
         }
     }
 
-    public boolean isMoveAllowed(int r1, int c1, int r2, int c2) {
+    public boolean move(int r1, int c1, int r2, int c2) {
         if (!isInside(r1, c1) || !isInside(r2, c2)) return false;
 
         Tile start = tiles[r1][c1];
         Tile end = tiles[r2][c2];
 
+        
         if (start.getState() != TileState.PEG) return false;
         if (end.getState() != TileState.EMPTY) return false;
 
+        
         int dr = r2 - r1;
         int dc = c2 - c1;
 
@@ -103,63 +79,21 @@ public class Field {
             return false;
         }
 
-        int midR = (r1 + r2) / 2;
-        int midC = (c1 + c2) / 2;
+        
+        int mr = r1 + dr / 2;
+        int mc = c1 + dc / 2;
 
-        Tile middle = tiles[midR][midC];
-        return middle.getState() == TileState.PEG;
-    }
+        if (tiles[mr][mc].getState() != TileState.PEG) return false;
 
-    public void move(int r1, int c1, int r2, int c2) {
-        if (!isMoveAllowed(r1, c1, r2, c2)) {
-            System.out.println("Move not allowed");
-            return;
-        }
+        
+        start.setState(TileState.EMPTY);
+        tiles[mr][mc].setState(TileState.EMPTY);
+        end.setState(TileState.PEG);
 
-        int midR = (r1 + r2) / 2;
-        int midC = (c1 + c2) / 2;
-
-        tiles[r1][c1].setState(TileState.EMPTY);
-        tiles[midR][midC].setState(TileState.EMPTY);
-        tiles[r2][c2].setState(TileState.PEG);
-
-        updateGameState();
-    }
-
-    public boolean isSolved() {
-        int pegCount = 0;
-        for (int r = 0; r < rowCount; r++) {
-            for (int c = 0; c < columnCount; c++) {
-                if (tiles[r][c].getState() == TileState.PEG) {
-                    pegCount++;
-                    if (pegCount > 1) return false;
-                }
-            }
-        }
-        return pegCount == 1;
-    }
-
-    private void updateGameState() {
-        if (isSolved()) {
-            gameState = GameState.SOLVED;
-            return;
-        }
-
-        for (int r = 0; r < rowCount; r++) {
-            for (int c = 0; c < columnCount; c++) {
-                if (tiles[r][c].getState() == TileState.PEG) {
-                    if (isMoveAllowed(r, c, r - 2, c)) return;
-                    if (isMoveAllowed(r, c, r + 2, c)) return;
-                    if (isMoveAllowed(r, c, r, c - 2)) return;
-                    if (isMoveAllowed(r, c, r, c + 2)) return;
-                }
-            }
-        }
-
-        gameState = GameState.FAILED;
+        return true;
     }
 
     private boolean isInside(int r, int c) {
-        return r >= 0 && r < rowCount && c >= 0 && c < columnCount;
+        return r >= 0 && r < rows && c >= 0 && c < cols;
     }
 }
