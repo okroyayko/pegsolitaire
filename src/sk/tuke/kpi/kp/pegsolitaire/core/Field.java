@@ -35,34 +35,27 @@ public class Field {
     }
 
     public void readFile(String filename) {
-        try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
-            if (is == null) {
-                System.out.println("File not found: " + filename);
-                return;
-            }
+        java.nio.file.Path path = java.nio.file.Paths.get("src/sk/tuke/kpi/kp/pegsolitaire", filename);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(path)) {
             String line;
             int row = 0;
 
             while ((line = reader.readLine()) != null && row < rowCount) {
                 for (int col = 0; col < columnCount; col++) {
                     TileState state;
-
                     if (col < line.length()) {
                         char ch = line.charAt(col);
                         switch (ch) {
                             case 'X': state = TileState.BLOCKED; break;
-                            case 'O': state = TileState.PEG;     break;
-                            case '.': state = TileState.EMPTY;   break;
+                            case 'O': state = TileState.PEG; break;
+                            case '.': state = TileState.EMPTY; break;
                             case ' ': state = TileState.BLOCKED; break;
                             default:  state = TileState.BLOCKED;
                         }
                     } else {
                         state = TileState.BLOCKED;
                     }
-
                     tiles[row][col] = new Tile(state);
                 }
                 row++;
