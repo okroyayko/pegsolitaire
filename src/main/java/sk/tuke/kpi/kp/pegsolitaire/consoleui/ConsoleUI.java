@@ -1,7 +1,13 @@
-package sk.tuke.kpi.kp.pegsolitaire.consoleui;
+package main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui;
 
-import sk.tuke.kpi.kp.pegsolitaire.core.*;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.core.Field;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.core.GameState;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.core.TileState;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentServiceJDBC;
 
+import java.util.Date;
 import java.util.Scanner;
 
 public class ConsoleUI {
@@ -14,6 +20,8 @@ public class ConsoleUI {
             System.out.println("1 - Level 1");
             System.out.println("2 - Level 2");
             System.out.println("3 - Level 3");
+            System.out.println("4 - Leave feedback");
+            System.out.println("5 - Show feedback");
             System.out.println("q - Quit");
             System.out.print("Choose: ");
 
@@ -25,6 +33,8 @@ public class ConsoleUI {
                 case "1": loadLevel("level1.txt"); break;
                 case "2": loadLevel("level2.txt"); break;
                 case "3": loadLevel("level3.txt"); break;
+                case "4": leaveFeedback();
+                case "5": showFeedback();
                 default:
                     System.out.println("Invalid choice");
                     continue;
@@ -37,6 +47,31 @@ public class ConsoleUI {
     private void loadLevel(String filename) {
         field = new Field(7, 7);
         field.readFile(filename);
+    }
+
+    private void leaveFeedback() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Your name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Your comment: ");
+        String text = sc.nextLine();
+
+        CommentService service = new CommentServiceJDBC();
+        service.addComment(new Comment(name, "pegsolitaire", text, new Date()));
+
+        System.out.println("✔ Comment saved!");
+    }
+
+    private void showFeedback() {
+        CommentService service = new CommentServiceJDBC();
+        var list = service.getComments("pegsolitaire");
+
+        System.out.println("=== COMMENTS ===");
+        for (Comment c : list) {
+            System.out.println(c.getPlayer() + ": " + c.getComment());
+        }
     }
 
     private void show() {

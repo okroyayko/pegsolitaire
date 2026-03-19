@@ -1,9 +1,9 @@
-package sk.tuke.kpi.kp.pegsolitaire.core;
+package main.java.sk.tuke.kpi.kp.pegsolitaire.core;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
 public class Field {
     private final int rowCount;
@@ -35,37 +35,39 @@ public class Field {
     }
 
     public void readFile(String filename) {
-        java.nio.file.Path path = java.nio.file.Paths.get("src/sk/tuke/kpi/kp/pegsolitaire", filename);
+        try {
+            InputStream in = getClass().getClassLoader().getResourceAsStream("levels/" + filename);
 
-        try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(path)) {
+            if (in == null) {
+                throw new RuntimeException("Level file not found: " + filename);
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
             String line;
             int row = 0;
 
             while ((line = reader.readLine()) != null && row < rowCount) {
                 for (int col = 0; col < columnCount; col++) {
                     TileState state;
+
                     if (col < line.length()) {
                         char ch = line.charAt(col);
                         switch (ch) {
-                            case 'X':
-                                state = TileState.PEG;
-                                break;
-                            case 'O':
-                                state = TileState.EMPTY;
-                                break;
-                            case ' ':
-                                state = TileState.BLOCKED;
-                                break;
-                            default:
-                                state = TileState.BLOCKED;
+                            case 'X' -> state = TileState.PEG;
+                            case 'O' -> state = TileState.EMPTY;
+                            case ' ' -> state = TileState.BLOCKED;
+                            default -> state = TileState.BLOCKED;
                         }
                     } else {
                         state = TileState.BLOCKED;
                     }
+
                     tiles[row][col] = new Tile(state);
                 }
                 row++;
             }
+
 
             while (row < rowCount) {
                 for (int col = 0; col < columnCount; col++) {
@@ -74,8 +76,10 @@ public class Field {
                 row++;
             }
 
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("Error reading level: " + e.getMessage());
         }
     }
 

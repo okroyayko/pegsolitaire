@@ -1,4 +1,4 @@
-package sk.tuke.kpi.kp.pegsolitaire.core;
+package main.java.sk.tuke.kpi.kp.pegsolitaire.core;
 
 public class Tile {
     private TileState state;
