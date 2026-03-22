@@ -1,34 +1,26 @@
 package main.java.sk.tuke.kpi.kp.pegsolitaire.service;
 
 import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
-
 import java.sql.*;
 
 public class RatingServiceJDBC implements RatingService {
 
     private static final String URL = "jdbc:postgresql://localhost:5432/gamestudio";
-    private static final String USER = "app_user";
-    private static final String PASSWORD = "StrongPass123!";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "DB123456db";
 
     @Override
     public void setRating(Rating rating) {
-        String delete = "DELETE FROM rating WHERE game = ? AND player = ?";
-        String insert = "INSERT INTO rating (player, game, rating) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO rating (player, game, rating) VALUES (?, ?, ?)";
 
-        try (Connection c = DriverManager.getConnection(URL, USER, PASSWORD)) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            try (PreparedStatement ps = c.prepareStatement(delete)) {
-                ps.setString(1, rating.getGame());
-                ps.setString(2, rating.getPlayer());
-                ps.executeUpdate();
-            }
+            ps.setString(1, rating.getPlayer());
+            ps.setString(2, rating.getGame());
+            ps.setInt(3, rating.getRating());
 
-            try (PreparedStatement ps = c.prepareStatement(insert)) {
-                ps.setString(1, rating.getPlayer());
-                ps.setString(2, rating.getGame());
-                ps.setInt(3, rating.getRating());
-                ps.executeUpdate();
-            }
+            ps.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,16 +28,18 @@ public class RatingServiceJDBC implements RatingService {
     }
 
     @Override
-    public int getAverageRating(String game) {
-        String sql = "SELECT AVG(rating) FROM rating WHERE game = ?";
+    public int getRating(String player, String game) {
+        String sql = "SELECT rating FROM rating WHERE player = ? AND game = ? ORDER BY id DESC LIMIT 1";
 
-        try (Connection c = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setString(1, game);
+            ps.setString(1, player);
+            ps.setString(2, game);
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("rating");
             }
 
         } catch (SQLException e) {
@@ -56,17 +50,17 @@ public class RatingServiceJDBC implements RatingService {
     }
 
     @Override
-    public int getRating(String game, String player) {
-        String sql = "SELECT rating FROM rating WHERE game = ? AND player = ?";
+    public int getAverageRating(String game) {
+        String sql = "SELECT AVG(rating) AS avg_rating FROM rating WHERE game = ?";
 
-        try (Connection c = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, game);
-            ps.setString(2, player);
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("avg_rating");
             }
 
         } catch (SQLException e) {
