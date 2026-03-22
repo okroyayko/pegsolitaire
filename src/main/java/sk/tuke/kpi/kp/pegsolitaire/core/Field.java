@@ -122,6 +122,18 @@ public class Field {
         updateGameState();
     }
 
+    public int getRemainingPegs() {
+        int count = 0;
+        for (int r = 0; r < rowCount; r++) {
+            for (int c = 0; c < columnCount; c++) {
+                if (tiles[r][c].getState() == TileState.PEG) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     public boolean isSolved() {
         int pegCount = 0;
         for (int r = 0; r < rowCount; r++) {

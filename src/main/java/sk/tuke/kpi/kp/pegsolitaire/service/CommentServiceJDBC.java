@@ -23,7 +23,6 @@ public class CommentServiceJDBC implements CommentService {
             ps.setString(2, comment.getGame());
             ps.setString(3, comment.getComment());
 
-            // СТАВИМО ПОТОЧНИЙ ЧАС, НЕ ПОТРІБЕН getCommentedAt()
             ps.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
 
             ps.executeUpdate();
@@ -36,7 +35,7 @@ public class CommentServiceJDBC implements CommentService {
     @Override
     public List<Comment> getComments(String game) {
         List<Comment> comments = new ArrayList<>();
-        String sql = "SELECT player, game, comment, commented_at FROM comment WHERE game = ? ORDER BY commented_at DESC";
+        String sql = "SELECT player, game, comment, commented_at FROM comment WHERE game = ? ORDER BY commented_at ASC";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement ps = connection.prepareStatement(sql)) {

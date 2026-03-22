@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface ScoreService {
     void addScore(Score score);
-    List<Score> getBestScores(String game);
+    List<Score> getTopScores(String game);
 }

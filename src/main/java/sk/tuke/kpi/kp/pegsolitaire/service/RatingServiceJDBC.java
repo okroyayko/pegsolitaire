@@ -11,7 +11,12 @@ public class RatingServiceJDBC implements RatingService {
 
     @Override
     public void setRating(Rating rating) {
-        String sql = "INSERT INTO rating (player, game, rating) VALUES (?, ?, ?)";
+        String sql = """
+            INSERT INTO rating (player, game, rating)
+            VALUES (?, ?, ?)
+            ON CONFLICT (player, game)
+            DO UPDATE SET rating = EXCLUDED.rating
+        """;
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -29,7 +34,7 @@ public class RatingServiceJDBC implements RatingService {
 
     @Override
     public int getRating(String player, String game) {
-        String sql = "SELECT rating FROM rating WHERE player = ? AND game = ? ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT rating FROM rating WHERE player = ? AND game = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement ps = connection.prepareStatement(sql)) {

@@ -5,10 +5,8 @@ import main.java.sk.tuke.kpi.kp.pegsolitaire.core.GameState;
 import main.java.sk.tuke.kpi.kp.pegsolitaire.core.TileState;
 import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
 import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentServiceJDBC;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.RatingServiceJDBC;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import main.java.sk.tuke.kpi.kp.pegsolitaire.service.*;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -19,6 +17,7 @@ public class ConsoleUI {
 
     private final CommentService commentService = new CommentServiceJDBC();
     private final RatingService ratingService = new RatingServiceJDBC();
+    private final ScoreService scoreService = new ScoreServiceJDBC();
 
     public void menu() {
         while (true) {
@@ -30,6 +29,7 @@ public class ConsoleUI {
             System.out.println("5 - Show feedback");
             System.out.println("6 - Rate game");
             System.out.println("7 - Show average rating");
+            System.out.println("8 - Show top scores");
             System.out.println("q - Quit");
             System.out.print("Choose: ");
 
@@ -38,16 +38,14 @@ public class ConsoleUI {
             if (choice.equals("q")) return;
 
             switch (choice) {
-                case "1": loadLevel("level1.txt");
-                    play();
-                case "2": loadLevel("level2.txt");
-                    play();
-                case "3": loadLevel("level3.txt");
-                    play();
-                case "4": leaveFeedback();
-                case "5": showFeedback();
-                case "6": rateGame();
-                case "7": showAverageRating();
+                case "1": loadLevel("level1.txt"); play(); break;
+                case "2": loadLevel("level2.txt"); play(); break;
+                case "3": loadLevel("level3.txt"); play(); break;
+                case "4": leaveFeedback(); break;
+                case "5": showFeedback(); break;
+                case "6": rateGame(); break;
+                case "7": showAverageRating(); break;
+                case "8": showTopScores(); break;
                 default:
                     System.out.println("Invalid choice");
             }
@@ -95,6 +93,15 @@ public class ConsoleUI {
     private void showAverageRating() {
         int avg = ratingService.getAverageRating("pegsolitaire");
         System.out.println("Average rating: " + avg);
+    }
+
+    private void showTopScores() {
+        var list = scoreService.getTopScores("pegsolitaire");
+
+        System.out.println("=== TOP SCORES ===");
+        for (Score s : list) {
+            System.out.println(s.getPlayer() + " - " + s.getPoints());
+        }
     }
 
     private void show() {
@@ -162,9 +169,20 @@ public class ConsoleUI {
 
         show();
 
-        if (field.getGameState() == GameState.SOLVED)
+        int remaining = field.getRemainingPegs();
+        int points = 100 - remaining;
+
+        System.out.print("Your name: ");
+        String name = scanner.nextLine();
+
+        scoreService.addScore(new Score(name, "pegsolitaire", points, new Date()));
+
+        if (field.getGameState() == GameState.SOLVED) {
             System.out.println("You won!");
-        else
+        } else {
             System.out.println("No moves left. Game over.");
+        }
+
+        System.out.println("✔ Score saved! Your score: " + points);
     }
 }
