@@ -18,18 +18,21 @@ public class ConsoleUI {
     private final CommentService commentService = new CommentServiceJDBC();
     private final RatingService ratingService = new RatingServiceJDBC();
     private final ScoreService scoreService = new ScoreServiceJDBC();
+    private String playerName = null;
 
     public void menu() {
+
+        if (playerName == null) {
+            System.out.print("Enter your name: ");
+            playerName = scanner.nextLine().trim();
+        }
+
         while (true) {
             System.out.println("=== PEG SOLITAIRE ===");
-            System.out.println("1 - Level 1");
-            System.out.println("2 - Level 2");
-            System.out.println("3 - Level 3");
-            System.out.println("4 - Leave feedback");
-            System.out.println("5 - Show feedback");
-            System.out.println("6 - Rate game");
-            System.out.println("7 - Show average rating");
-            System.out.println("8 - Show top scores");
+            System.out.println("1 - Play");
+            System.out.println("2 - Show feedback");
+            System.out.println("3 - Show average rating");
+            System.out.println("4 - Show top scores");
             System.out.println("q - Quit");
             System.out.print("Choose: ");
 
@@ -38,19 +41,40 @@ public class ConsoleUI {
             if (choice.equals("q")) return;
 
             switch (choice) {
-                case "1": loadLevel("level1.txt"); play(); break;
-                case "2": loadLevel("level2.txt"); play(); break;
-                case "3": loadLevel("level3.txt"); play(); break;
-                case "4": leaveFeedback(); break;
-                case "5": showFeedback(); break;
-                case "6": rateGame(); break;
-                case "7": showAverageRating(); break;
-                case "8": showTopScores(); break;
+                case "1": selectLevel(); break;
+                case "2": showFeedback(); break;
+                case "3": showAverageRating(); break;
+                case "4": showTopScores(); break;
                 default:
                     System.out.println("Invalid choice");
             }
         }
     }
+
+
+    private void selectLevel() {
+        while (true) {
+            System.out.println("=== SELECT LEVEL ===");
+            System.out.println("1 - Level 1");
+            System.out.println("2 - Level 2");
+            System.out.println("3 - Level 3");
+            System.out.println("b - Back");
+            System.out.print("Choose: ");
+
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1": loadLevel("level1.txt"); play(); return;
+                case "2": loadLevel("level2.txt"); play(); return;
+                case "3": loadLevel("level3.txt"); play(); return;
+                case "b": return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
+    }
+
+
 
     private void loadLevel(String filename) {
         field = new Field(7, 7);
@@ -58,15 +82,14 @@ public class ConsoleUI {
     }
 
     private void leaveFeedback() {
-        System.out.print("Your name: ");
-        String name = scanner.nextLine();
+        String name = playerName;
 
         System.out.print("Your comment: ");
         String text = scanner.nextLine();
 
         commentService.addComment(new Comment(name, "pegsolitaire", text, new Date()));
 
-        System.out.println("✔ Comment saved!");
+        System.out.println("Comment saved!");
     }
 
     private void showFeedback() {
@@ -79,16 +102,37 @@ public class ConsoleUI {
     }
 
     private void rateGame() {
-        System.out.print("Your name: ");
-        String name = scanner.nextLine();
+        if (field.getGameState() == GameState.PLAYING) {
+            System.out.println("Hru musíte najprv dokončiť, až potom môžete hodnotiť.");
+            return;
+        }
 
-        System.out.print("Your rating (1-5): ");
-        int rating = Integer.parseInt(scanner.nextLine());
+        String name = playerName;
+        int rating;
+
+        do {
+            System.out.print("Zadajte hodnotenie (1-5): ");
+
+            while (!scanner.hasNextInt()) {
+                System.out.println("Zadajte číslo od 1 do 5.");
+                scanner.next();
+            }
+
+            rating = scanner.nextInt();
+
+            if (rating < 1 || rating > 5) {
+                System.out.println("Hodnotenie musí byť v rozsahu 1 až 5.");
+            }
+
+        } while (rating < 1 || rating > 5);
 
         ratingService.setRating(new Rating(name, "pegsolitaire", rating));
 
-        System.out.println("✔ Rating saved!");
+        System.out.println("Rating saved!");
+        scanner.nextLine();
     }
+
+
 
     private void showAverageRating() {
         int avg = ratingService.getAverageRating("pegsolitaire");
@@ -172,17 +216,40 @@ public class ConsoleUI {
         int remaining = field.getRemainingPegs();
         int points = 100 - remaining;
 
-        System.out.print("Your name: ");
-        String name = scanner.nextLine();
 
-        scoreService.addScore(new Score(name, "pegsolitaire", points, new Date()));
 
         if (field.getGameState() == GameState.SOLVED) {
             System.out.println("You won!");
         } else {
             System.out.println("No moves left. Game over.");
         }
+        String name = playerName;
 
-        System.out.println("✔ Score saved! Your score: " + points);
+
+        scoreService.addScore(new Score(name, "pegsolitaire", points, new Date()));
+
+        System.out.println("Score saved! Your score: " + points);
+
+        System.out.println("Chcete zanechať komentár? (y/n)");
+        String c = scanner.nextLine().trim();
+        if (c.equalsIgnoreCase("y")) {
+            leaveFeedback();
+        }
+
+        int existingRating = ratingService.getRating(playerName, "pegsolitaire");
+
+        if (existingRating == 0) {
+            System.out.println("Chcete ohodnotiť hru? (y/n)");
+            String r = scanner.nextLine().trim();
+            if (r.equalsIgnoreCase("y")) {
+                rateGame();
+            }
+        } else {
+            System.out.println("Už ste hodnotili hru. Ďalšie hodnotenie nie je potrebné.");
+        }
+
+
+
+
     }
 }
