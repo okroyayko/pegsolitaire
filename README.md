@@ -62,3 +62,10 @@ CREATE TABLE rating (
     rating INT NOT NULL,
     CONSTRAINT rating_unique UNIQUE (player, game)
 );
+
+
+
+
+
+
+
