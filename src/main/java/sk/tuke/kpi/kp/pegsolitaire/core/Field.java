@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
+import static main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RED;
+import static main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RESET;
+
 public class Field {
     private final int rowCount;
     private final int columnCount;
@@ -108,7 +111,7 @@ public class Field {
 
     public void move(int r1, int c1, int r2, int c2) {
         if (!isMoveAllowed(r1, c1, r2, c2)) {
-            System.out.println("Move not allowed");
+            System.out.println(RED + "Invalid move!" + RESET);
             return;
         }
 
