@@ -98,7 +98,7 @@ public class ConsoleUI {
                 case "3": loadLevel("level3.txt"); play(); return;
                 case "b": return;
                 default:
-                    System.out.println(RED + "Invalid choice!" + RESET);
+                    System.out.println(YELLOW + "Invalid choice!" + RESET);
             }
         }
     }
@@ -118,7 +118,7 @@ public class ConsoleUI {
 
         commentService.addComment(new Comment(name, "pegsolitaire", text, new Date()));
 
-        System.out.println("Comment saved!");
+        System.out.println(GREEN + "Comment saved!" + RESET);
     }
 
     private void showFeedback() {
@@ -140,17 +140,17 @@ public class ConsoleUI {
         int rating;
 
         do {
-            System.out.print("Zadajte hodnotenie (1-5): ");
+            System.out.print(BLUE + "Zadajte hodnotenie (1-5): " + RESET);
 
             while (!scanner.hasNextInt()) {
-                System.out.println("Zadajte číslo od 1 do 5.");
+                System.out.println(YELLOW + "Zadajte číslo od 1 do 5!" + RESET);
                 scanner.next();
             }
 
             rating = scanner.nextInt();
 
             if (rating < 1 || rating > 5) {
-                System.out.println("Hodnotenie musí byť v rozsahu 1 až 5.");
+                System.out.println(YELLOW + "Hodnotenie musí byť v rozsahu 1 až 5!" + RESET);
             }
 
         } while (rating < 1 || rating > 5);
@@ -256,7 +256,7 @@ public class ConsoleUI {
         if (field.getGameState() == GameState.SOLVED) {
             System.out.println(BRIGHT_GREEN + "You won!" + RESET);
         } else {
-            System.out.println("No moves left. Game over.");
+            System.out.println(RED +"No moves left. Game over." + RESET);
         }
         String name = playerName;
 
