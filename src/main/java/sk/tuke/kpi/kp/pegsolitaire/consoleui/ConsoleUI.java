@@ -266,10 +266,22 @@ public class ConsoleUI {
         System.out.println("Score saved! Your score: " + points);
 
         System.out.println("Chcete zanechať komentár? (y/n)");
-        String c = scanner.nextLine().trim();
-        if (c.equalsIgnoreCase("y")) {
+
+        String c;
+        while (true) {
+            c = scanner.nextLine().trim().toLowerCase();
+
+            if (c.equals("y") || c.equals("n")) {
+                break;
+            }
+
+            System.out.println("Neplatný vstup. Zadajte iba 'y' alebo 'n'.");
+        }
+
+        if (c.equals("y")) {
             leaveFeedback();
         }
+
 
         int existingRating = ratingService.getRating(playerName, "pegsolitaire");
 
