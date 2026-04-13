@@ -4,6 +4,7 @@ import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
 
 public interface RatingService {
     void setRating(Rating rating);
+    int getRating(String game, String player);
     int getAverageRating(String game);
-    int getRating(String player, String game);
+    void reset();
 }

@@ -24,7 +24,6 @@ public class RatingServiceJDBC implements RatingService {
             ps.setString(1, rating.getPlayer());
             ps.setString(2, rating.getGame());
             ps.setInt(3, rating.getRating());
-
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -33,14 +32,14 @@ public class RatingServiceJDBC implements RatingService {
     }
 
     @Override
-    public int getRating(String player, String game) {
-        String sql = "SELECT rating FROM rating WHERE player = ? AND game = ?";
+    public int getRating(String game, String player) {
+        String sql = "SELECT rating FROM rating WHERE game = ? AND player = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setString(1, player);
-            ps.setString(2, game);
+            ps.setString(1, game);
+            ps.setString(2, player);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -73,5 +72,19 @@ public class RatingServiceJDBC implements RatingService {
         }
 
         return 0;
+    }
+
+    @Override
+    public void reset() {
+        String sql = "DELETE FROM rating";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
