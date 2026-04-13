@@ -1,12 +1,12 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui;
+package sk.tuke.kpi.kp.pegsolitaire.consoleui;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.core.Field;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.core.GameState;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.core.TileState;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Score;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.*;
+import sk.tuke.kpi.kp.pegsolitaire.core.Field;
+import sk.tuke.kpi.kp.pegsolitaire.core.GameState;
+import sk.tuke.kpi.kp.pegsolitaire.core.TileState;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import sk.tuke.kpi.kp.pegsolitaire.service.*;
 
 
 

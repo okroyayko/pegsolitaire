@@ -1,9 +1,10 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.service;
+package sk.tuke.kpi.kp.pegsolitaire.service;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
 import java.util.List;
 
 public interface ScoreService {
     void addScore(Score score);
     List<Score> getTopScores(String game);
+    void reset();
 }

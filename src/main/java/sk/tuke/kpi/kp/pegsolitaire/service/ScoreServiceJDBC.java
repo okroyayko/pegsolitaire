@@ -1,10 +1,9 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.service;
+package sk.tuke.kpi.kp.pegsolitaire.service;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ScoreServiceJDBC implements ScoreService {
@@ -28,7 +27,7 @@ public class ScoreServiceJDBC implements ScoreService {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error adding score", e);
         }
     }
 
@@ -53,9 +52,23 @@ public class ScoreServiceJDBC implements ScoreService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading top scores", e);
         }
 
         return list;
+    }
+
+    @Override
+    public void reset() {
+        String sql = "DELETE FROM score";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = connection.createStatement()) {
+
+            stmt.executeUpdate(sql);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error resetting scores", e);
+        }
     }
 }

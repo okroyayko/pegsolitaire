@@ -1,8 +1,8 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.test;
+package sk.tuke.kpi.kp.pegsolitaire.test;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Score;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.ScoreServiceJDBC;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
+import sk.tuke.kpi.kp.pegsolitaire.service.ScoreServiceJDBC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

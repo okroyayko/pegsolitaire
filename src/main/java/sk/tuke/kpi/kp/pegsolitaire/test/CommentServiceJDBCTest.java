@@ -1,8 +1,8 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.test;
+package sk.tuke.kpi.kp.pegsolitaire.test;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
-import main.java.sk.tuke.kpi.kp.pegsolitaire.service.CommentServiceJDBC;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
+import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
+import sk.tuke.kpi.kp.pegsolitaire.service.CommentServiceJDBC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

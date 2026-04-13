@@ -1,6 +1,6 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.service;
+package sk.tuke.kpi.kp.pegsolitaire.service;
 
-import main.java.sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
 
 public interface RatingService {
     void setRating(Rating rating);

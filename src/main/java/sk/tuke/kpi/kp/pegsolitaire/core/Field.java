@@ -1,12 +1,12 @@
-package main.java.sk.tuke.kpi.kp.pegsolitaire.core;
+package sk.tuke.kpi.kp.pegsolitaire.core;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-import static main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RED;
-import static main.java.sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RESET;
+import static sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RED;
+import static sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RESET;
 
 public class Field {
     private final int rowCount;
