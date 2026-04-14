@@ -6,10 +6,12 @@ import sk.tuke.kpi.kp.pegsolitaire.core.TileState;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
-import sk.tuke.kpi.kp.pegsolitaire.service.*;
-
-
-
+import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
+import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
+import sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.CommentServiceRestClient;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.RatingServiceRestClient;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.ScoreServiceRestClient;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -32,18 +34,19 @@ public class ConsoleUI {
     public static final String BRIGHT_PURPLE = "\u001B[95m";
     public static final String BRIGHT_CYAN = "\u001B[96m";
 
-
     private Field field;
     private final Scanner scanner = new Scanner(System.in);
 
-    private final CommentService commentService = new CommentServiceJDBC();
-    private final RatingService ratingService = new RatingServiceJDBC();
-    private final ScoreService scoreService = new ScoreServiceJDBC();
+    private final CommentService commentService = new CommentServiceRestClient();
+    private final RatingService ratingService = new RatingServiceRestClient();
+    private final ScoreService scoreService = new ScoreServiceRestClient();
+
     private String playerName = null;
 
     public void menu() {
 
-        System.out.println(BRIGHT_PURPLE + "██████╗ ███████╗ ██████╗     ███████╗ ██████╗ ██╗      ██╗████████╗ █████╗ ██╗██████╗ ███████╗\n" +
+        System.out.println(BRIGHT_PURPLE +
+                "██████╗ ███████╗ ██████╗     ███████╗ ██████╗ ██╗      ██╗████████╗ █████╗ ██╗██████╗ ███████╗\n" +
                 "██╔══██╗██╔════╝██╔════╝     ██╔════╝██╔═══██╗██║      ██║╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝\n" +
                 "███████║█████╗  ██║   ██╗    ███████╗██║   ██║██║      ██║   ██║   ███████║██║██████╔╝█████╗  \n" +
                 "██╔══██║██╔══╝  ██║   ██║    ╚════██║██║   ██║██║      ██║   ██║   ██╔══██║██║██╔══██╗██╔══╝  \n" +
@@ -64,7 +67,6 @@ public class ConsoleUI {
             System.out.println(RED + "q - Quit" + RESET);
             System.out.print(BRIGHT_YELLOW + "Enter your choice: " + RESET);
 
-
             String choice = scanner.nextLine().trim();
 
             if (choice.equals("q")) return;
@@ -79,7 +81,6 @@ public class ConsoleUI {
             }
         }
     }
-
 
     private void selectLevel() {
         while (true) {
@@ -103,20 +104,16 @@ public class ConsoleUI {
         }
     }
 
-
-
     private void loadLevel(String filename) {
         field = new Field(7, 7);
         field.readFile(filename);
     }
 
     private void leaveFeedback() {
-        String name = playerName;
-
         System.out.print("Your comment: ");
         String text = scanner.nextLine();
 
-        commentService.addComment(new Comment(name, "pegsolitaire", text, new Date()));
+        commentService.addComment(new Comment(playerName, "pegsolitaire", text, new Date()));
 
         System.out.println(GREEN + "Comment saved!" + RESET);
     }
@@ -131,12 +128,6 @@ public class ConsoleUI {
     }
 
     private void rateGame() {
-        if (field.getGameState() == GameState.PLAYING) {
-            System.out.println("Hru musíte najprv dokončiť, až potom môžete hodnotiť.");
-            return;
-        }
-
-        String name = playerName;
         int rating;
 
         do {
@@ -148,6 +139,7 @@ public class ConsoleUI {
             }
 
             rating = scanner.nextInt();
+            scanner.nextLine(); // clear buffer
 
             if (rating < 1 || rating > 5) {
                 System.out.println(YELLOW + "Hodnotenie musí byť v rozsahu 1 až 5!" + RESET);
@@ -155,13 +147,10 @@ public class ConsoleUI {
 
         } while (rating < 1 || rating > 5);
 
-        ratingService.setRating(new Rating(name, "pegsolitaire", rating));
+        ratingService.setRating(new Rating(playerName, "pegsolitaire", rating));
 
         System.out.println("Rating saved!");
-        scanner.nextLine();
     }
-
-
 
     private void showAverageRating() {
         int avg = ratingService.getAverageRating("pegsolitaire");
@@ -230,7 +219,6 @@ public class ConsoleUI {
             String[] p = line.split("\\s+");
             if (p.length != 4) {
                 System.out.println(RED + "Invalid input!" + RESET);
-
                 continue;
             }
 
@@ -242,7 +230,6 @@ public class ConsoleUI {
                 field.move(r1, c1, r2, c2);
             } catch (Exception e) {
                 System.out.println(RED + "Invalid number!" + RESET);
-
             }
         }
 
@@ -251,37 +238,30 @@ public class ConsoleUI {
         int remaining = field.getRemainingPegs();
         int points = 100 - remaining;
 
-
-
         if (field.getGameState() == GameState.SOLVED) {
             System.out.println(BRIGHT_GREEN + "You won!" + RESET);
         } else {
-            System.out.println(RED +"No moves left. Game over." + RESET);
+            System.out.println(RED + "No moves left. Game over." + RESET);
         }
-        String name = playerName;
 
-
-        scoreService.addScore(new Score(name, "pegsolitaire", points, new Date()));
+        scoreService.addScore(new Score(playerName, "pegsolitaire", points, new Date()));
 
         System.out.println("Score saved! Your score: " + points);
 
+        // FIX: clear buffer
+        System.out.println();
         System.out.println("Chcete zanechať komentár? (y/n)");
-
         String c;
+
         while (true) {
             c = scanner.nextLine().trim().toLowerCase();
-
-            if (c.equals("y") || c.equals("n")) {
-                break;
-            }
-
+            if (c.equals("y") || c.equals("n")) break;
             System.out.println("Neplatný vstup. Zadajte iba 'y' alebo 'n'.");
         }
 
         if (c.equals("y")) {
             leaveFeedback();
         }
-
 
         int existingRating = ratingService.getRating(playerName, "pegsolitaire");
 

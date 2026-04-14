@@ -10,6 +10,9 @@ import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
 import sk.tuke.kpi.kp.pegsolitaire.service.CommentServiceJPA;
 import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 import sk.tuke.kpi.kp.pegsolitaire.service.RatingServiceJPA;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.CommentServiceRestClient;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.RatingServiceRestClient;
+import sk.tuke.kpi.kp.pegsolitaire.service.rest.ScoreServiceRestClient;
 
 @SpringBootApplication
 @EntityScan("sk.tuke.kpi.kp.pegsolitaire.entity")
@@ -20,16 +23,17 @@ public class GameStudioServer {
 
     @Bean
     public ScoreService scoreService() {
-        return new ScoreServiceJPA();
+        return new ScoreServiceRestClient();
     }
 
     @Bean
     public CommentService commentService() {
-        return new CommentServiceJPA();
+        return new CommentServiceRestClient();
     }
 
     @Bean
     public RatingService ratingService() {
-        return new RatingServiceJPA();
+        return new RatingServiceRestClient();
     }
+
 }
