@@ -20,6 +20,11 @@ public class ScoreServiceRest {
     }
 
     @GetMapping("/{game}")
+    public List<Score> getScores(@PathVariable String game) {
+        return scoreService.getTopScores(game);
+    }
+
+    @GetMapping("/{game}/top")
     public List<Score> getTopScores(@PathVariable String game) {
         return scoreService.getTopScores(game);
     }

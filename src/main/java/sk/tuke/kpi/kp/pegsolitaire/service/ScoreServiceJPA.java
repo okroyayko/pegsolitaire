@@ -3,10 +3,12 @@ package sk.tuke.kpi.kp.pegsolitaire.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
 
 import java.util.List;
 
+@Service
 @Transactional
 public class ScoreServiceJPA implements ScoreService {
 
@@ -29,6 +31,8 @@ public class ScoreServiceJPA implements ScoreService {
 
     @Override
     public void reset() {
-        entityManager.createNamedQuery("Score.resetScores").executeUpdate();
+        entityManager
+                .createNamedQuery("Score.resetScores")
+                .executeUpdate();
     }
 }

@@ -46,12 +46,12 @@ public class ConsoleUI {
     public void menu() {
 
         System.out.println(BRIGHT_PURPLE +
-                "██████╗ ███████╗ ██████╗     ███████╗ ██████╗ ██╗      ██╗████████╗ █████╗ ██╗██████╗ ███████╗\n" +
-                "██╔══██╗██╔════╝██╔════╝     ██╔════╝██╔═══██╗██║      ██║╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝\n" +
+                "███████╗███████╗ ██████╗     ███████╗ ██████╗ ██╗      ██╗████████╗ █████╗ ██╗██████╗ ███████╗\n" +
+                "██╔══██║██╔════╝██╔════╝     ██╔════╝██╔═══██╗██║      ██║╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝\n" +
                 "███████║█████╗  ██║   ██╗    ███████╗██║   ██║██║      ██║   ██║   ███████║██║██████╔╝█████╗  \n" +
-                "██╔══██║██╔══╝  ██║   ██║    ╚════██║██║   ██║██║      ██║   ██║   ██╔══██║██║██╔══██╗██╔══╝  \n" +
-                "██║  ██║███████╗╚██████╔╝    ███████║╚██████╔╝███████╗ ██║   ██║   ██║  ██║██║██║  ██║███████╗\n" +
-                "╚═╝  ╚═╝╚══════╝ ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝\n");
+                "██╔════╝██╔══╝  ██║   ██║    ╚════██║██║   ██║██║      ██║   ██║   ██╔══██║██║██╔══██╗██╔══╝  \n" +
+                "██║     ███████╗╚██████╔╝    ███████║╚██████╔╝███████╗ ██║   ██║   ██║  ██║██║██║  ██║███████╗\n" +
+                "╚═╝     ╚══════╝ ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝\n");
 
         if (playerName == null) {
             System.out.print("Enter your name: ");
@@ -113,17 +113,26 @@ public class ConsoleUI {
         System.out.print("Your comment: ");
         String text = scanner.nextLine();
 
-        commentService.addComment(new Comment(playerName, "pegsolitaire", text, new Date()));
-
-        System.out.println(GREEN + "Comment saved!" + RESET);
+        try {
+            commentService.addComment(new Comment(playerName, "pegsolitaire", text, new Date()));
+            System.out.println(GREEN + "Comment saved!" + RESET);
+        } catch (Exception e) {
+            System.out.println(RED + "Error saving comment:" + RESET);
+            e.printStackTrace();
+        }
     }
 
     private void showFeedback() {
-        var list = commentService.getComments("pegsolitaire");
+        try {
+            var list = commentService.getComments("pegsolitaire");
 
-        System.out.println(BRIGHT_GREEN + "COMMENTS" + RESET);
-        for (Comment c : list) {
-            System.out.println(c.getPlayer() + ": " + c.getComment());
+            System.out.println(BRIGHT_GREEN + "COMMENTS" + RESET);
+            for (Comment c : list) {
+                System.out.println(c.getPlayer() + ": " + c.getComment());
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Error loading comments:" + RESET);
+            e.printStackTrace();
         }
     }
 
@@ -147,22 +156,36 @@ public class ConsoleUI {
 
         } while (rating < 1 || rating > 5);
 
-        ratingService.setRating(new Rating(playerName, "pegsolitaire", rating));
-
-        System.out.println("Rating saved!");
+        try {
+            ratingService.setRating(new Rating(playerName, "pegsolitaire", rating));
+            System.out.println(GREEN + "Rating saved!" + RESET);
+        } catch (Exception e) {
+            System.out.println(RED + "Error saving rating:" + RESET);
+            e.printStackTrace();
+        }
     }
 
     private void showAverageRating() {
-        int avg = ratingService.getAverageRating("pegsolitaire");
-        System.out.println("Average rating: " + avg);
+        try {
+            int avg = ratingService.getAverageRating("pegsolitaire");
+            System.out.println("Average rating: " + avg);
+        } catch (Exception e) {
+            System.out.println(RED + "Error loading average rating:" + RESET);
+            e.printStackTrace();
+        }
     }
 
     private void showTopScores() {
-        var list = scoreService.getTopScores("pegsolitaire");
+        try {
+            var list = scoreService.getTopScores("pegsolitaire");
 
-        System.out.println(BRIGHT_GREEN + "TOP SCORES" + RESET);
-        for (Score s : list) {
-            System.out.println(s.getPlayer() + " - " + s.getPoints());
+            System.out.println(BRIGHT_GREEN + "TOP SCORES" + RESET);
+            for (Score s : list) {
+                System.out.println(s.getPlayer() + " - " + s.getPoints());
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Error loading scores:" + RESET);
+            e.printStackTrace();
         }
     }
 
@@ -244,11 +267,15 @@ public class ConsoleUI {
             System.out.println(RED + "No moves left. Game over." + RESET);
         }
 
-        scoreService.addScore(new Score(playerName, "pegsolitaire", points, new Date()));
+        try {
+            scoreService.addScore(new Score(playerName, "pegsolitaire", points, new Date()));
+            System.out.println("Score saved! Your score: " + points);
+        } catch (Exception e) {
+            System.out.println(RED + "ERROR WHILE SAVING SCORE:" + RESET);
+            e.printStackTrace();
+            return;
+        }
 
-        System.out.println("Score saved! Your score: " + points);
-
-        // FIX: clear buffer
         System.out.println();
         System.out.println("Chcete zanechať komentár? (y/n)");
         String c;
@@ -263,7 +290,14 @@ public class ConsoleUI {
             leaveFeedback();
         }
 
-        int existingRating = ratingService.getRating(playerName, "pegsolitaire");
+        int existingRating = 0;
+
+        try {
+            existingRating = ratingService.getRating(playerName, "pegsolitaire");
+        } catch (Exception e) {
+            System.out.println(RED + "ERROR WHILE LOADING RATING:" + RESET);
+            e.printStackTrace();
+        }
 
         if (existingRating == 0) {
             System.out.println("Chcete ohodnotiť hru? (y/n)");
@@ -275,4 +309,5 @@ public class ConsoleUI {
             System.out.println("Už ste hodnotili hru. Ďalšie hodnotenie nie je potrebné.");
         }
     }
+
 }

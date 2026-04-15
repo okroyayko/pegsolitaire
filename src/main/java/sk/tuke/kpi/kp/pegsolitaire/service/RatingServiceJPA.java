@@ -3,10 +3,12 @@ package sk.tuke.kpi.kp.pegsolitaire.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
 
 import java.util.List;
 
+@Service
 @Transactional
 public class RatingServiceJPA implements RatingService {
 
@@ -15,10 +17,20 @@ public class RatingServiceJPA implements RatingService {
 
     @Override
     public void setRating(Rating rating) {
-        entityManager
-                .createNamedQuery("Rating.resetRatings")
-                .executeUpdate();
-        entityManager.persist(rating);
+        List<Rating> list = entityManager
+                .createNamedQuery("Rating.getRating", Rating.class)
+                .setParameter("game", rating.getGame())
+                .setParameter("player", rating.getPlayer())
+                .getResultList();
+
+        if (list.isEmpty()) {
+            entityManager.persist(rating);
+        } else {
+            Rating existing = list.get(0);
+            existing.setRating(rating.getRating());
+            existing.setRatedOn(rating.getRatedOn());
+            entityManager.merge(existing);
+        }
     }
 
     @Override

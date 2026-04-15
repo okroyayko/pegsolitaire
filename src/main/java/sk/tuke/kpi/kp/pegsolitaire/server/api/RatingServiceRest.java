@@ -22,7 +22,7 @@ public class RatingServiceRest {
         return ratingService.getRating(game, player);
     }
 
-    @GetMapping("/average/{game}")
+    @GetMapping("/{game}/average")
     public int getAverageRating(@PathVariable String game) {
         return ratingService.getAverageRating(game);
     }
