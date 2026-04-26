@@ -32,6 +32,33 @@ public class ScoreServiceJDBC implements ScoreService {
     }
 
     @Override
+    public List<Score> getScores(String game) {
+        List<Score> list = new ArrayList<>();
+        String sql = "SELECT player, game, points, played_at FROM score WHERE game = ? ORDER BY points DESC";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, game);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Score(
+                        rs.getString("player"),
+                        rs.getString("game"),
+                        rs.getInt("points"),
+                        rs.getTimestamp("played_at")
+                ));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error loading scores", e);
+        }
+
+        return list;
+    }
+
+    @Override
     public List<Score> getTopScores(String game) {
         List<Score> list = new ArrayList<>();
         String sql = "SELECT player, game, points, played_at FROM score WHERE game = ? ORDER BY points DESC LIMIT 10";

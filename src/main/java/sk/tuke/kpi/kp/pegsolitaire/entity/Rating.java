@@ -1,61 +1,49 @@
 package sk.tuke.kpi.kp.pegsolitaire.entity;
 
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Rating.getRating",
-                query = "SELECT r FROM Rating r WHERE r.game = :game AND r.player = :player"),
-        @NamedQuery(name = "Rating.getAverageRating",
-                query = "SELECT AVG(r.rating) FROM Rating r WHERE r.game = :game"),
-        @NamedQuery(name = "Rating.resetRatings",
-                query = "DELETE FROM Rating")
+        @NamedQuery(
+                name = "Rating.getRating",
+                query = "SELECT r FROM Rating r WHERE r.game = :game AND r.player = :player"
+        ),
+        @NamedQuery(
+                name = "Rating.getAverageRating",
+                query = "SELECT AVG(r.rating) FROM Rating r WHERE r.game = :game"
+        ),
+        @NamedQuery(
+                name = "Rating.resetRatings",
+                query = "DELETE FROM Rating"
+        )
 })
-public class Rating implements Serializable {
+public class Rating {
 
     @Id
-    @GeneratedValue
-    private int ident;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rating_seq")
+    @SequenceGenerator(name = "rating_seq", sequenceName = "rating_seq", allocationSize = 1)
+    private Long ident;
 
-    private String player;
     private String game;
+    private String player;
     private int rating;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date ratedOn;
 
     public Rating() {
     }
 
-    // 🔥 Ось конструктор, якого тобі не вистачало
-    public Rating(String player, String game, int rating) {
-        this.player = player;
+    public Rating(String game, String player, int rating, Date ratedOn) {
         this.game = game;
-        this.rating = rating;
-        this.ratedOn = new Date();
-    }
-
-    public Rating(String player, String game, int rating, Date ratedOn) {
         this.player = player;
-        this.game = game;
         this.rating = rating;
         this.ratedOn = ratedOn;
     }
 
-    public int getIdent() {
+    public Long getIdent() {
         return ident;
-    }
-
-    public void setIdent(int ident) {
-        this.ident = ident;
-    }
-
-    public String getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(String player) {
-        this.player = player;
     }
 
     public String getGame() {
@@ -64,6 +52,14 @@ public class Rating implements Serializable {
 
     public void setGame(String game) {
         this.game = game;
+    }
+
+    public String getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(String player) {
+        this.player = player;
     }
 
     public int getRating() {

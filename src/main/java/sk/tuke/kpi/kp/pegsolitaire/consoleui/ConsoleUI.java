@@ -114,13 +114,16 @@ public class ConsoleUI {
         String text = scanner.nextLine();
 
         try {
-            commentService.addComment(new Comment(playerName, "pegsolitaire", text, new Date()));
+            commentService.addComment(
+                    new Comment("pegsolitaire", playerName, text, new Date())
+            );
             System.out.println(GREEN + "Comment saved!" + RESET);
         } catch (Exception e) {
             System.out.println(RED + "Error saving comment:" + RESET);
             e.printStackTrace();
         }
     }
+
 
     private void showFeedback() {
         try {
@@ -157,13 +160,16 @@ public class ConsoleUI {
         } while (rating < 1 || rating > 5);
 
         try {
-            ratingService.setRating(new Rating(playerName, "pegsolitaire", rating));
+            ratingService.setRating(
+                    new Rating("pegsolitaire", playerName, rating, new Date())
+            );
             System.out.println(GREEN + "Rating saved!" + RESET);
         } catch (Exception e) {
             System.out.println(RED + "Error saving rating:" + RESET);
             e.printStackTrace();
         }
     }
+
 
     private void showAverageRating() {
         try {
