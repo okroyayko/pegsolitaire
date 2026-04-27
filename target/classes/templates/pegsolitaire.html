@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>PegSolitaire</title>
+</head>
+<body>
+<h1>PegSolitaire – web client</h1>
+
+<form th:action="@{/pegsolitaire}" method="get">
+    <label>Player:
+        <input type="text" name="player" th:value="${player}">
+    </label>
+    <input type="hidden" name="game" th:value="${game}">
+    <button type="submit">Refresh</button>
+</form>
+
+<h2>Game board</h2>
+
+<table>
+    <tr th:each="row : ${board}">
+        <td th:each="cell : ${row}"
+            th:text="${cell.state}">
+        </td>
+    </tr>
+</table>
+
+<h2>Top scores</h2>
+<ul>
+    <li th:each="s : ${scores}"
+        th:text="${s.player} + ' - ' + ${s.points}">score</li>
+</ul>
+
+<h2>Comments</h2>
+<ul>
+    <li th:each="c : ${comments}"
+        th:text="${c.player} + ': ' + ${c.comment}">comment</li>
+</ul>
+
+<form th:action="@{/pegsolitaire/comment}" method="post">
+    <input type="hidden" name="game" th:value="${game}">
+    <input type="hidden" name="player" th:value="${player}">
+    <label>New comment:
+        <input type="text" name="text">
+    </label>
+    <button type="submit">Add comment</button>
+</form>
+
+<h2>Rating</h2>
+<p>Average rating: <span th:text="${averageRating}">0</span></p>
+
+<form th:action="@{/pegsolitaire/rate}" method="post">
+    <input type="hidden" name="game" th:value="${game}">
+    <input type="hidden" name="player" th:value="${player}">
+    <label>Rate (1–5):
+        <input type="number" name="rating" min="1" max="5">
+    </label>
+    <button type="submit">Rate</button>
+</form>
+
+</body>
+</html>

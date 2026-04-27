@@ -1,10 +1,11 @@
-package sk.tuke.kpi.kp.pegsolitaire.service;
+package sk.tuke.kpi.kp.pegsolitaire.service.jpa;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
+import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 
 import java.util.List;
 

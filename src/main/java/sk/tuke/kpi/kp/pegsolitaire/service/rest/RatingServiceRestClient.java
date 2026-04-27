@@ -6,7 +6,7 @@ import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 
 public class RatingServiceRestClient implements RatingService {
 
-    private static final String URL = "http://localhost:8080/api/rating";
+    private static final String URL = "http://localhost:8083/api/rating";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -22,7 +22,7 @@ public class RatingServiceRestClient implements RatingService {
 
     @Override
     public int getAverageRating(String game) {
-        return restTemplate.getForObject(URL + "/average/" + game, Integer.class);
+        return restTemplate.getForObject(URL + "/" + game + "/average", Integer.class);
     }
 
     @Override

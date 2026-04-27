@@ -1,7 +1,7 @@
 package sk.tuke.kpi.kp.pegsolitaire.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.util.Date; 
 
 @Entity
 @NamedQueries({
