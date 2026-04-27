@@ -2,9 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>PegSolitaire</title>
+    <title>PegSolitaire – web client</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .board {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .board td {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #444;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 0;
+        }
+
+        .tile.peg {
+            background-color: #f0f0f0;
+            color: #222;
+        }
+        .tile.peg::after {
+            content: "●";
+        }
+
+        .tile.empty {
+            background-color: #fafafa;
+            color: #777;
+        }
+        .tile.empty::after {
+            content: "○";
+        }
+
+        .tile.blocked {
+            background-color: #ccc;
+        }
+
+        form {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 5px;
+            margin-left: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+    </style>
 </head>
+
 <body>
+
 <h1>PegSolitaire – web client</h1>
 
 <form th:action="@{/pegsolitaire}" method="get">
@@ -17,10 +81,10 @@
 
 <h2>Game board</h2>
 
-<table>
+<table class="board">
     <tr th:each="row : ${board}">
         <td th:each="cell : ${row}"
-            th:text="${cell.state}">
+            th:class="'tile ' + ${cell.state.toString().toLowerCase()}">
         </td>
     </tr>
 </table>
