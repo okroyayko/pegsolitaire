@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ScoreServiceRestClient implements ScoreService {
 
-    private static final String URL = "http://localhost:8083/api/score";
+    private static final String URL = "http://localhost:8084/api/score";
 
     private final RestTemplate restTemplate = new RestTemplate();
 

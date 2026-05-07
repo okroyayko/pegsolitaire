@@ -6,7 +6,7 @@ import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 
 public class RatingServiceRestClient implements RatingService {
 
-    private static final String URL = "http://localhost:8083/api/rating";
+    private static final String URL = "http://localhost:8084/api/rating";
 
     private RestTemplate restTemplate = new RestTemplate();
 

@@ -5,13 +5,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-import static sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RED;
-import static sk.tuke.kpi.kp.pegsolitaire.consoleui.ConsoleUI.RESET;
 
 public class Field {
     private final int rowCount;
     private final int columnCount;
-    private final Tile[][] tiles;
+    private Tile[][] tiles;
     private GameState gameState;
 
     public Field(int rowCount, int columnCount) {
@@ -19,6 +17,10 @@ public class Field {
         this.columnCount = columnCount;
         this.tiles = new Tile[rowCount][columnCount];
         this.gameState = GameState.PLAYING;
+    }
+
+    public Tile[][] getTiles() {
+        return tiles;
     }
 
     public int getRowCount() {
@@ -39,11 +41,10 @@ public class Field {
 
     public void readFile(String filename) {
         try {
-            InputStream in = getClass().getClassLoader().getResourceAsStream("levels/" + filename);
+            this.tiles = new Tile[rowCount][columnCount]; // reset array
 
-            if (in == null) {
-                throw new RuntimeException("Level file not found: " + filename);
-            }
+            InputStream in = getClass().getClassLoader().getResourceAsStream("levels/" + filename);
+            if (in == null) throw new RuntimeException("Level file not found: " + filename);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
@@ -71,7 +72,6 @@ public class Field {
                 row++;
             }
 
-
             while (row < rowCount) {
                 for (int col = 0; col < columnCount; col++) {
                     tiles[row][col] = new Tile(TileState.BLOCKED);
@@ -85,6 +85,7 @@ public class Field {
             System.out.println("Error reading level: " + e.getMessage());
         }
     }
+
 
     public boolean isMoveAllowed(int r1, int c1, int r2, int c2) {
         if (!isInside(r1, c1) || !isInside(r2, c2)) return false;
@@ -111,7 +112,7 @@ public class Field {
 
     public void move(int r1, int c1, int r2, int c2) {
         if (!isMoveAllowed(r1, c1, r2, c2)) {
-            System.out.println(RED + "Invalid move!" + RESET);
+            System.out.println("Invalid move!");
             return;
         }
 

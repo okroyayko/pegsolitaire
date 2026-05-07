@@ -4,123 +4,156 @@
     <meta charset="UTF-8">
     <title>PegSolitaire – web client</title>
 
+    <link rel="stylesheet" href="/css/game.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background: #f2f2f2 url('/background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #000;
         }
 
-        h1 {
+        .topbar {
+            width: 100%;
+            background: #000000;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 120px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #bfbfbf;
+        }
+
+        .layout {
+            margin-top: 20px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 25px;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.85);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .panel h2 {
+            color: #000;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
             margin-bottom: 10px;
         }
 
-        .board {
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .board td {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #444;
+        .center-panel {
             text-align: center;
-            vertical-align: middle;
-            font-size: 28px;
-            font-weight: bold;
-            padding: 0;
-        }
-
-        .tile.peg {
-            background-color: #f0f0f0;
-            color: #222;
-        }
-        .tile.peg::after {
-            content: "●";
-        }
-
-        .tile.empty {
-            background-color: #fafafa;
-            color: #777;
-        }
-        .tile.empty::after {
-            content: "○";
-        }
-
-        .tile.blocked {
-            background-color: #ccc;
-        }
-
-        form {
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        input[type="text"], input[type="number"] {
-            padding: 5px;
-            margin-left: 5px;
         }
 
         button {
-            padding: 5px 10px;
-            margin-left: 5px;
+            padding: 7px 14px;
+            background: #333;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #000;
         }
     </style>
 </head>
 
 <body>
 
-<h1>PegSolitaire – web client</h1>
+<div class="topbar">
+    <img src="/logo.png" alt="Logo" class="logo">
+    <div class="title">PegSolitaire – web client</div>
+</div>
 
-<form th:action="@{/pegsolitaire}" method="get">
-    <label>Player:
-        <input type="text" name="player" th:value="${player}">
-    </label>
-    <input type="hidden" name="game" th:value="${game}">
-    <button type="submit">Refresh</button>
-</form>
+<div class="layout">
 
-<h2>Game board</h2>
+    <!-- LEFT PANEL -->
+    <div class="panel">
+        <h2>Player</h2>
+        <form th:action="@{/pegsolitaire}" method="get">
+            <input type="text" name="player" th:value="${player}">
+            <input type="hidden" name="game" th:value="${game}">
+            <button type="submit">Refresh</button>
+        </form>
 
-<table class="board">
-    <tr th:each="row : ${board}">
-        <td th:each="cell : ${row}"
-            th:class="'tile ' + ${cell.state.toString().toLowerCase()}">
-        </td>
-    </tr>
-</table>
+        <h2>Top scores</h2>
+        <ul>
+            <li th:each="s : ${scores}"
+                th:text="${s.player} + ' - ' + ${s.points}">score</li>
+        </ul>
+    </div>
 
-<h2>Top scores</h2>
-<ul>
-    <li th:each="s : ${scores}"
-        th:text="${s.player} + ' - ' + ${s.points}">score</li>
-</ul>
+    <!-- CENTER PANEL -->
+    <div class="panel center-panel">
+        <h2>Game board</h2>
 
-<h2>Comments</h2>
-<ul>
-    <li th:each="c : ${comments}"
-        th:text="${c.player} + ': ' + ${c.comment}">comment</li>
-</ul>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
+            <button onclick="newGame()">New Game</button>
 
-<form th:action="@{/pegsolitaire/comment}" method="post">
-    <input type="hidden" name="game" th:value="${game}">
-    <input type="hidden" name="player" th:value="${player}">
-    <label>New comment:
-        <input type="text" name="text">
-    </label>
-    <button type="submit">Add comment</button>
-</form>
+            <select id="levelSelect" onchange="changeLevel()">
+                <option value="level1.txt">Level 1</option>
+                <option value="level2.txt">Level 2</option>
+                <option value="level3.txt">Level 3</option>
+            </select>
+        </div>
 
-<h2>Rating</h2>
-<p>Average rating: <span th:text="${averageRating}">0</span></p>
+        <div id="board"></div>
+    </div>
 
-<form th:action="@{/pegsolitaire/rate}" method="post">
-    <input type="hidden" name="game" th:value="${game}">
-    <input type="hidden" name="player" th:value="${player}">
-    <label>Rate (1–5):
-        <input type="number" name="rating" min="1" max="5">
-    </label>
-    <button type="submit">Rate</button>
-</form>
+    <!-- RIGHT PANEL -->
+    <div class="panel">
+
+        <h2>Comments</h2>
+        <ul>
+            <li th:each="c : ${comments}"
+                th:text="${c.player} + ': ' + ${c.comment}">comment</li>
+        </ul>
+
+        <form th:action="@{/pegsolitaire/comment}" method="post">
+            <input type="hidden" name="game" th:value="${game}">
+            <input type="hidden" name="player" th:value="${player}">
+            <label>New comment:</label>
+            <input type="text" name="text">
+            <button type="submit">Add</button>
+        </form>
+
+        <h2>Rating</h2>
+        <p>Average rating: <strong th:text="${averageRating}">0</strong></p>
+
+        <form th:action="@{/pegsolitaire/rate}" method="post">
+            <input type="hidden" name="game" th:value="${game}">
+            <input type="hidden" name="player" th:value="${player}">
+            <label>Rate (1–5):</label>
+            <input type="number" name="rating" min="1" max="5">
+            <button type="submit">Rate</button>
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ONLY ONE JS FILE -->
+<script src="/js/game.js"></script>
 
 </body>
 </html>
