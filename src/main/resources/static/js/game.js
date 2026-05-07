@@ -1,15 +1,30 @@
 let selected = null;
 let currentField = null;
 
-function loadState() {
-    fetch('/api/game/state')
-        .then(r => r.json())
-        .then(renderBoard);
+/* ============================
+   INITIAL LOAD OF GAME STATE
+============================ */
+function getPlayerName() {
+    const input = document.querySelector("input[name='player']");
+    if (!input) return "Anonymous";
+    return input.value.trim() || "Anonymous";
 }
 
+function loadState() {
+    const player = getPlayerName();
+
+    fetch('/api/game/state?player=' + encodeURIComponent(player))
+        .then(r => r.json())
+        .then(renderBoard)
+        .catch(err => console.error("State load error:", err));
+}
+
+/* ============================
+   RENDER BOARD
+============================ */
 function renderBoard(field) {
-    const boardDiv = document.getElementById('board');
     currentField = field;
+    const boardDiv = document.getElementById('board');
     boardDiv.innerHTML = '';
 
     const tiles = field.tiles;
@@ -34,14 +49,13 @@ function renderBoard(field) {
         boardDiv.appendChild(rowDiv);
     }
 
-    if (field.gameState === "SOLVED") {
-        alert("You won!");
-    }
-    if (field.gameState === "FAILED") {
-        alert("No moves left!");
-    }
+    if (field.gameState === "SOLVED") alert("You won!");
+    if (field.gameState === "FAILED") alert("No moves left!");
 }
 
+/* ============================
+   TILE CLICK LOGIC
+============================ */
 function onTileClick(e) {
     const r = parseInt(e.currentTarget.dataset.row);
     const c = parseInt(e.currentTarget.dataset.col);
@@ -59,49 +73,76 @@ function onTileClick(e) {
         });
 
     } else {
-        const r2 = r;
-        const c2 = c;
         const r1 = selected.r;
         const c1 = selected.c;
-
         selected = null;
 
-        sendMove(r1, c1, r2, c2);
+        sendMove(r1, c1, r, c);
     }
 }
 
+/* ============================
+   SEND MOVE + ANIMATION
+============================ */
 function sendMove(r1, c1, r2, c2) {
-    fetch(`/api/game/move?r1=${r1}&c1=${c1}&r2=${r2}&c2=${c2}`, {
-        method: 'POST'
-    })
-        .then(r => r.json())
-        .then(renderBoard);
+    const fromTile = document.querySelector(`[data-row="${r1}"][data-col="${c1}"]`);
+
+    fromTile.classList.add("moving");
+
+    setTimeout(() => {
+        fetch(`/api/game/move?r1=${r1}&c1=${c1}&r2=${r2}&c2=${c2}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(field => {
+                renderBoard(field);
+
+                const newTile = document.querySelector(`[data-row="${r2}"][data-col="${c2}"]`);
+                if (newTile) {
+                    newTile.classList.add("landed");
+                    setTimeout(() => newTile.classList.remove("landed"), 200);
+                }
+            });
+    }, 150);
+
+    setTimeout(() => fromTile.classList.remove("moving"), 300);
 }
 
+/* ============================
+   NEW GAME
+============================ */
 function newGame() {
     fetch('/api/game/new', { method: 'POST' })
         .then(r => r.json())
         .then(renderBoard);
 }
 
+/* ============================
+   CHANGE LEVEL
+============================ */
 function changeLevel() {
     const level = document.getElementById("levelSelect").value;
 
-    fetch(`/api/game/new?level=${level}`, {
-        method: 'POST'
-    })
-        .then(r => r.json())
-        .then(renderBoard)
+    fetch(`/api/game/new?level=${level}`, { method: 'POST' })
+        .then(r => {
+            if (!r.ok) throw new Error("Level not found");
+            return r.json();
+        })
+        .then(field => {
+            renderBoard(field);
+            loadState();
+        })
         .catch(err => console.error("Level change error:", err));
 }
 
+/* ============================
+   POSSIBLE MOVES
+============================ */
 function getPossibleMoves(field, r, c) {
     const moves = [];
     const dirs = [
-        {dr: -2, dc: 0},
-        {dr: 2, dc: 0},
-        {dr: 0, dc: -2},
-        {dr: 0, dc: 2}
+        { dr: -2, dc: 0 },
+        { dr: 2, dc: 0 },
+        { dr: 0, dc: -2 },
+        { dr: 0, dc: 2 }
     ];
 
     for (const d of dirs) {
@@ -116,11 +157,40 @@ function getPossibleMoves(field, r, c) {
 
         if (field.tiles[midR][midC].state === "PEG" &&
             field.tiles[r2][c2].state === "EMPTY") {
-            moves.push({r: r2, c: c2});
+            moves.push({ r: r2, c: c2 });
         }
     }
 
     return moves;
 }
 
-document.addEventListener('DOMContentLoaded', loadState);
+/* ============================
+   DARK MODE + INITIAL LOAD
+============================ */
+document.addEventListener('DOMContentLoaded', () => {
+
+    const toggle = document.getElementById("themeToggle");
+
+    if (toggle) {
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+            toggle.textContent = "☀️";
+        } else {
+            toggle.textContent = "🌙";
+        }
+
+        toggle.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+
+            if (document.body.classList.contains("dark")) {
+                localStorage.setItem("theme", "dark");
+                toggle.textContent = "☀️";
+            } else {
+                localStorage.setItem("theme", "light");
+                toggle.textContent = "🌙";
+            }
+        });
+    }
+
+    loadState();
+});

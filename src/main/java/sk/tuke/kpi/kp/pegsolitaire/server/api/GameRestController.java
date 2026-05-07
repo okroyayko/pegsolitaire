@@ -1,37 +1,46 @@
 package sk.tuke.kpi.kp.pegsolitaire.server.api;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import sk.tuke.kpi.kp.pegsolitaire.core.Field;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
+import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
+import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
+import sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
+import org.springframework.ui.Model;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/game")
 public class GameRestController {
 
-    private Field createField() {
+    @Autowired
+    private ScoreService scoreService;
+
+    private Field createField(String level) {
         Field f = new Field(7, 7);
-        f.readFile("level1.txt");
+        f.readFile(level);
         return f;
     }
 
     @GetMapping("/state")
-    public Field getState(HttpSession session) {
-        Field field = (Field) session.getAttribute("field");
-        if (field == null) {
-            field = createField();
-            session.setAttribute("field", field);
-        }
-        return field;
-    }
-
-    @PostMapping("/new")
-    public Field newGame(
-            @RequestParam(required = false, defaultValue = "level1.txt") String level,
+    public Field getState(
+            @RequestParam(required = false) String player,
             HttpSession session
     ) {
-        Field field = new Field(7, 7);
-        field.readFile(level);
-        session.setAttribute("field", field);
+        // Зберігаємо ім’я гравця в сесію
+        if (player != null) {
+            session.setAttribute("player", player);
+        }
+
+        Field field = (Field) session.getAttribute("field");
+        if (field == null) {
+            field = createField("level1.txt");
+            session.setAttribute("field", field);
+        }
+
         return field;
     }
 
@@ -45,10 +54,40 @@ public class GameRestController {
     ) {
         Field field = (Field) session.getAttribute("field");
         if (field == null) {
-            field = createField();
+            field = createField("level1.txt");
             session.setAttribute("field", field);
         }
+
         field.move(r1, c1, r2, c2);
+
+        // --- НОВА ЛОГІКА ЗАПИСУ SCORE ---
+        int remaining = field.getRemainingPegs();
+        int points = 100 - remaining;
+
+        if (points > 0) { // щоб не записувати 100 - 100 = 0
+            String player = (String) session.getAttribute("player");
+            if (player == null || player.isBlank()) player = "Anonymous";
+
+            Score score = new Score(
+                    player,
+                    "pegsolitaire",
+                    points,
+                    new Date()
+            );
+
+            scoreService.addScore(score);
+        }
+        // --- КІНЕЦЬ НОВОЇ ЛОГІКИ ---
+
+        return field;
+    }
+    @PostMapping("/new")
+    public Field newGame(
+            @RequestParam(required = false, defaultValue = "level1.txt") String level,
+            HttpSession session
+    ) {
+        Field field = createField(level);
+        session.setAttribute("field", field);
         return field;
     }
 }

@@ -138,6 +138,7 @@ public class Field {
         return count;
     }
 
+
     public boolean isSolved() {
         int pegCount = 0;
         for (int r = 0; r < rowCount; r++) {

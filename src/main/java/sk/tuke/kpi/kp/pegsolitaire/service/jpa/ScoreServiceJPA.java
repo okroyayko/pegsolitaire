@@ -34,7 +34,7 @@ public class ScoreServiceJPA implements ScoreService {
         return entityManager
                 .createNamedQuery("Score.getTopScores", Score.class)
                 .setParameter("game", game)
-                .setMaxResults(10)
+                .setMaxResults(10)   // ← Тільки ТОП‑10
                 .getResultList();
     }
 
