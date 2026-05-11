@@ -1,17 +1,17 @@
 package sk.tuke.kpi.kp.pegsolitaire.web;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import sk.tuke.kpi.kp.pegsolitaire.core.Field;
 import sk.tuke.kpi.kp.pegsolitaire.core.Tile;
-import sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
-import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
-import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
 import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
 import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 import sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Comment;
+import sk.tuke.kpi.kp.pegsolitaire.entity.Rating;
 
 import java.util.Date;
 
@@ -23,34 +23,40 @@ public class PegSolitaireController {
     private final CommentService commentService;
     private final RatingService ratingService;
 
-    private final Field field;
-
     public PegSolitaireController(ScoreService scoreService,
                                   CommentService commentService,
                                   RatingService ratingService) {
-
         this.scoreService = scoreService;
         this.commentService = commentService;
         this.ratingService = ratingService;
+    }
 
-        this.field = new Field(7, 7);
-
-        field.readFile("level1.txt");
+    private Field getField(HttpSession session) {
+        Field field = (Field) session.getAttribute("field");
+        if (field == null) {
+            field = new Field(7, 7);
+            field.readFile("level1.txt");
+            session.setAttribute("field", field);
+        }
+        return field;
     }
 
     @GetMapping
     public String gamePage(@RequestParam(defaultValue = "pegsolitaire") String game,
-                           @RequestParam(required = false) String player,
+                           HttpSession session,
                            Model model) {
 
-        Tile[][] tiles = new Tile[field.getRowCount()][field.getColumnCount()];
-        for (int r = 0; r < field.getRowCount(); r++) {
-            for (int c = 0; c < field.getColumnCount(); c++) {
-                tiles[r][c] = field.getTile(r, c);
-            }
+        // Якщо не залогінений → на логін
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
         }
+
+        // Поле
+        Field field = getField(session);
+        Tile[][] tiles = field.getTiles();
         model.addAttribute("board", tiles);
 
+        // Дані для панелей
         model.addAttribute("game", game);
         model.addAttribute("scores", scoreService.getTopScores(game));
         model.addAttribute("comments", commentService.getComments(game));
@@ -61,26 +67,41 @@ public class PegSolitaireController {
         } catch (Exception ignored) {}
         model.addAttribute("averageRating", avg);
 
-        model.addAttribute("player", player == null ? "" : player);
+        // Ім’я гравця тепер береться з сесії
+        model.addAttribute("user", session.getAttribute("user"));
 
         return "pegsolitaire";
     }
 
     @PostMapping("/comment")
     public String addComment(@RequestParam String game,
-                             @RequestParam String player,
-                             @RequestParam String text) {
+                             @RequestParam String text,
+                             HttpSession session) {
 
-        commentService.addComment(new Comment(game, player, text, new Date()));
-        return "redirect:/pegsolitaire?game=" + game + "&player=" + player;
+        String user = (String) session.getAttribute("user");
+        if (user == null) user = "Anonymous";
+
+        commentService.addComment(new Comment(game, user, text, new Date()));
+
+        return "redirect:/pegsolitaire?game=" + game;
     }
 
     @PostMapping("/rate")
     public String rate(@RequestParam String game,
-                       @RequestParam String player,
-                       @RequestParam int rating) {
+                       @RequestParam int rating,
+                       HttpSession session) {
 
-        ratingService.setRating(new Rating(game, player, rating, new Date()));
-        return "redirect:/pegsolitaire?game=" + game + "&player=" + player;
+        String user = (String) session.getAttribute("user");
+        if (user == null) user = "Anonymous";
+
+        ratingService.setRating(new Rating(game, user, rating, new Date()));
+
+        return "redirect:/pegsolitaire?game=" + game;
+    }
+
+    @PostMapping("/new")
+    public String newGame(HttpSession session) {
+        session.removeAttribute("field");
+        return "redirect:/pegsolitaire";
     }
 }

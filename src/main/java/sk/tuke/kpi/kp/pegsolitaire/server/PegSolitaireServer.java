@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = "sk.tuke.kpi.kp.pegsolitaire")
 @EntityScan("sk.tuke.kpi.kp.pegsolitaire.entity")
 @EnableJpaRepositories("sk.tuke.kpi.kp.pegsolitaire.service")
 public class PegSolitaireServer {

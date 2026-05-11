@@ -11,7 +11,6 @@ import sk.tuke.kpi.kp.pegsolitaire.service.rest.CommentServiceRestClient;
 import sk.tuke.kpi.kp.pegsolitaire.service.rest.RatingServiceRestClient;
 import sk.tuke.kpi.kp.pegsolitaire.service.rest.ScoreServiceRestClient;
 
-@SpringBootApplication
 @EntityScan("sk.tuke.kpi.kp.pegsolitaire.entity")
 public class GameStudioServer {
     public static void main(String[] args) {

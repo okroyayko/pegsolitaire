@@ -9,110 +9,6 @@
     <style>
         .theme-btn {
             margin-left: auto;
-            margin-right: 100px;
-            background: #222;
-            border: 2px solid #555;
-            color: #ddd;
-            font-size: 20px;
-            padding: 6px 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.25s ease;
-        }
-
-        .theme-btn:hover {
-            background: #444;
-            border-color: #888;
-            transform: scale(1.1);
-        }
-        /* ============================
-           LIGHT THEME (default)
-        ============================ */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-
-            /* Твій старий фон-картинка */
-            background: #f2f2f2 url('/background.png') no-repeat center center fixed;
-            background-size: cover;
-
-            color: #000;
-        }
-
-        /* ============================
-           DARK THEME
-        ============================ */
-        body.dark {
-            background: #121212 !important; /* темний фон */
-            color: #d0d0d0;
-        }
-
-        /* Панелі */
-        body.dark .panel {
-            background: rgba(30, 30, 30, 0.9);
-            border-color: #333;
-            color: #d0d0d0;
-        }
-
-        /* Заголовки */
-        body.dark .panel h2,
-        body.dark .title {
-            color: #d0d0d0;
-        }
-
-        /* Кнопки */
-        body.dark button {
-            background: #333;
-            color: #d0d0d0;
-            border: 1px solid #555;
-        }
-
-        body.dark button:hover {
-            background: #444;
-        }
-
-        /* Поля вводу */
-        body.dark input,
-        body.dark select {
-            background: #222;
-            color: #d0d0d0;
-            border: 1px solid #555;
-        }
-
-        /* Плитки */
-        body.dark .tile {
-            background-color: #2a2a2a;
-        }
-
-        /* Порожні */
-        body.dark .tile.empty {
-            background-color: #555;
-        }
-
-        /* Заблоковані */
-        body.dark .tile.blocked {
-            background-color: #1a1a1a;
-        }
-
-        /* Пеги */
-        body.dark .tile.peg {
-            background-color: #d4b000;
-        }
-
-        /* Підсвітка */
-        body.dark .highlight {
-            outline: 2px solid #888;
-        }
-
-        /* Обрана клітинка */
-        body.dark .selected {
-            outline: 2px solid #ccc;
-        }
-
-        /* Кнопка теми */
-        .theme-btn {
-            margin-left: auto;
             margin-right: 70px;
             background: #222;
             border: 2px solid #555;
@@ -130,10 +26,18 @@
             transform: scale(1.1);
         }
 
-        body.dark .theme-btn {
-            background: #ddd;
-            color: #111;
-            border-color: #aaa;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f2f2f2 url('/background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #000;
+        }
+
+        body.dark {
+            background: #121212 !important;
+            color: #d0d0d0;
         }
 
         .topbar {
@@ -195,6 +99,26 @@
         button:hover {
             background: #000;
         }
+
+        .tile {
+            width: 45px;
+            height: 45px;
+            display: inline-block;
+            margin: 3px;
+            border-radius: 50%;
+        }
+
+        .peg { background: gold; }
+        .empty { background: black; }
+        .blocked { background: transparent; }
+
+        .tile.selected {
+            outline: 2px solid #00aaff;
+        }
+
+        .tile.highlight {
+            outline: 2px solid #ffaa00;
+        }
     </style>
 </head>
 
@@ -202,24 +126,27 @@
 
 <div class="topbar">
     <img src="/logo.png" alt="Logo" class="logo">
-
     <div class="title">PegSolitaire – web client</div>
 
-    <button id="themeToggle" class="theme-btn">🌙</button>
+    <div style="margin-left:auto; display:flex; align-items:center; gap:20px;">
+        <span style="color:white; font-size:18px;">
+            Logged in as: <strong th:text="${user}"></strong>
+        </span>
+
+        <a href="/logout" style="color:red; font-size:18px; text-decoration:none;">
+            Logout
+        </a>
+
+        <button id="themeToggle" class="theme-btn">🌙</button>
+    </div>
 </div>
-
-
 
 <div class="layout">
 
     <!-- LEFT PANEL -->
     <div class="panel">
         <h2>Player</h2>
-        <form th:action="@{/pegsolitaire}" method="get">
-            <input type="text" name="player" th:value="${player}">
-            <input type="hidden" name="game" th:value="${game}">
-            <button type="submit">Refresh</button>
-        </form>
+        <p><strong th:text="${user}"></strong></p>
 
         <h2>Top scores</h2>
         <ul>
@@ -229,7 +156,6 @@
     </div>
 
     <!-- CENTER PANEL -->
-
     <div class="panel center-panel">
         <h2>Game board</h2>
 
@@ -243,12 +169,12 @@
             </select>
         </div>
 
+        <!-- JS малює дошку -->
         <div id="board"></div>
     </div>
 
     <!-- RIGHT PANEL -->
     <div class="panel">
-
         <h2>Comments</h2>
         <ul>
             <li th:each="c : ${comments}"
@@ -257,7 +183,6 @@
 
         <form th:action="@{/pegsolitaire/comment}" method="post">
             <input type="hidden" name="game" th:value="${game}">
-            <input type="hidden" name="player" th:value="${player}">
             <label>New comment:</label>
             <input type="text" name="text">
             <button type="submit">Add</button>
@@ -268,17 +193,14 @@
 
         <form th:action="@{/pegsolitaire/rate}" method="post">
             <input type="hidden" name="game" th:value="${game}">
-            <input type="hidden" name="player" th:value="${player}">
             <label>Rate (1–5):</label>
             <input type="number" name="rating" min="1" max="5">
             <button type="submit">Rate</button>
         </form>
-
     </div>
 
 </div>
 
-<!-- ONLY ONE JS FILE -->
 <script src="/js/game.js"></script>
 
 </body>

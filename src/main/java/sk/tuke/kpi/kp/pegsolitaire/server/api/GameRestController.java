@@ -3,12 +3,11 @@ package sk.tuke.kpi.kp.pegsolitaire.server.api;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import sk.tuke.kpi.kp.pegsolitaire.core.Field;
+import sk.tuke.kpi.kp.pegsolitaire.core.GameState;
 import sk.tuke.kpi.kp.pegsolitaire.entity.Score;
-import sk.tuke.kpi.kp.pegsolitaire.service.CommentService;
-import sk.tuke.kpi.kp.pegsolitaire.service.RatingService;
 import sk.tuke.kpi.kp.pegsolitaire.service.ScoreService;
-import org.springframework.ui.Model;
 
 import java.util.Date;
 
@@ -25,15 +24,31 @@ public class GameRestController {
         return f;
     }
 
-    @GetMapping("/state")
-    public Field getState(
-            @RequestParam(required = false) String player,
-            HttpSession session
-    ) {
-        // Зберігаємо ім’я гравця в сесію
-        if (player != null) {
-            session.setAttribute("player", player);
+    private void saveScoreIfSolved(Field field, HttpSession session) {
+        if (field.getGameState() == GameState.SOLVED) {
+
+            int remaining = field.getRemainingPegs();
+            int points = 100 - remaining;
+
+            if (points <= 0) return;
+
+            String player = (String) session.getAttribute("user");
+            if (player == null || player.isBlank()) player = "Anonymous";
+
+            Score score = new Score(
+                    player,
+                    "pegsolitaire",
+                    points,
+                    new Date()
+            );
+
+            scoreService.addScore(score);
         }
+    }
+
+
+    @GetMapping("/state")
+    public Field getState(HttpSession session) {
 
         Field field = (Field) session.getAttribute("field");
         if (field == null) {
@@ -60,27 +75,11 @@ public class GameRestController {
 
         field.move(r1, c1, r2, c2);
 
-        // --- НОВА ЛОГІКА ЗАПИСУ SCORE ---
-        int remaining = field.getRemainingPegs();
-        int points = 100 - remaining;
-
-        if (points > 0) { // щоб не записувати 100 - 100 = 0
-            String player = (String) session.getAttribute("player");
-            if (player == null || player.isBlank()) player = "Anonymous";
-
-            Score score = new Score(
-                    player,
-                    "pegsolitaire",
-                    points,
-                    new Date()
-            );
-
-            scoreService.addScore(score);
-        }
-        // --- КІНЕЦЬ НОВОЇ ЛОГІКИ ---
+        saveScoreIfSolved(field, session);
 
         return field;
     }
+
     @PostMapping("/new")
     public Field newGame(
             @RequestParam(required = false, defaultValue = "level1.txt") String level,

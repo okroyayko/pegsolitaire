@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="49cc3f4c-1243-4404-badb-ae02af7c38cd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/entity/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/repositories/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/api/LoginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/api/RegisterController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamestudio.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sk/tuke/gamestudio/server/GameStudioServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/gamestudio/server/GameStudioServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/PegSolitaireApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/PegSolitaireApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/PegSolitaireServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/PegSolitaireServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/api/GameRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/server/api/GameRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/web/PegSolitaireController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sk/tuke/kpi/kp/pegsolitaire/web/PegSolitaireController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/pegsolitaire.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/pegsolitaire.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/gamestudio/server/GameStudioServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/gamestudio/server/GameStudioServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/PegSolitaireApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/PegSolitaireApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/consoleui/ConsoleUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/consoleui/ConsoleUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/server/PegSolitaireServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/server/PegSolitaireServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/server/api/GameRestController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/server/api/GameRestController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/web/PegSolitaireController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/sk/tuke/kpi/kp/pegsolitaire/web/PegSolitaireController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/pegsolitaire.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/pegsolitaire.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/main/resources/templates/pegsolitaire.html" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="JavaAutoRunManager">
+    <enabled-run-configurations>
+      <run-configuration type="MavenRunConfiguration" name="pegsolitaire [org.springframework.boot:spring-boot-maven-plugin:3.2.2:run]" />
+    </enabled-run-configurations>
+  </component>
+  <component name="MavenRunner">
+    <option name="jreName" value="ms-21" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="3Daqy7Dveen3eTnAoFYpyTBiw99" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.pegsolitaire [org.springframework.boot:spring-boot-maven-plugin:3.2.2:run].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.PegSolitaireApplication.executor": "Run",
+    "git-widget-placeholder": "zorian-pegsolitaire",
+    "last_opened_file_path": "C:/Users/zorya/IdeaProjects/pegsolitaire",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2045977",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.runner",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="PegSolitaireApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="pegsolitaire" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="sk.tuke.kpi.kp.pegsolitaire.PegSolitaireApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="49cc3f4c-1243-4404-badb-ae02af7c38cd" name="Changes" comment="" />
+      <created>1778530779570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1778530779570</updated>
+      <workItem from="1778530780769" duration="720000" />
+      <workItem from="1778531543221" duration="8148000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
