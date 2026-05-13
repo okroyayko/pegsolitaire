@@ -58,6 +58,23 @@ public class CommentServiceJDBC implements CommentService {
     }
 
     @Override
+    public Comment getCommentByPlayer(String game, String player) {
+        // JDBC version not used anymore
+        return null;
+    }
+
+    @Override
+    public void updateComment(Comment comment) {
+        // JDBC version not used anymore
+    }
+
+    @Override
+    public void deleteComment(String game, String player) {
+        // JDBC version not used anymore
+    }
+
+
+    @Override
     public void reset() {
         String sql = "DELETE FROM comment";
 

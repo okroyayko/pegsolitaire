@@ -15,7 +15,7 @@ public class RegisterController {
     }
 
     @GetMapping("/register")
-    public String registerForm() {
+    public String register() {
         return "register";
     }
 
@@ -35,3 +35,4 @@ public class RegisterController {
         return "redirect:/pegsolitaire";
     }
 }
+

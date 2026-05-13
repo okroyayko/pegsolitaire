@@ -49,8 +49,8 @@ function renderBoard(field) {
         boardDiv.appendChild(rowDiv);
     }
 
-    if (field.gameState === "SOLVED") alert("You won!");
-    if (field.gameState === "FAILED") alert("No moves left!");
+    if (field.gameState === "SOLVED") showMessage("You won!", "success");
+    if (field.gameState === "FAILED") showMessage("No moves left!", "fail");
 }
 
 /* ============================
@@ -80,6 +80,25 @@ function onTileClick(e) {
         sendMove(r1, c1, r, c);
     }
 }
+function showMessage(text, type = "success") {
+    const box = document.querySelector(".modal-content");
+    const textEl = document.getElementById("gameMessageText");
+
+    box.classList.remove("success", "fail");
+    textEl.classList.remove("success", "fail");
+
+    box.classList.add(type);
+    textEl.classList.add(type);
+
+    textEl.innerText = text;
+    document.getElementById("gameMessage").style.display = "flex";
+}
+
+function closeMessage() {
+    document.getElementById("gameMessage").style.display = "none";
+}
+
+
 
 /* ============================
    SEND MOVE + ANIMATION

@@ -18,6 +18,8 @@ public class RatingServiceJPA implements RatingService {
 
     @Override
     public void setRating(Rating rating) {
+
+        // шукаємо існуючий рейтинг цього гравця для цієї гри
         List<Rating> list = entityManager
                 .createNamedQuery("Rating.getRating", Rating.class)
                 .setParameter("game", rating.getGame())
@@ -25,8 +27,10 @@ public class RatingServiceJPA implements RatingService {
                 .getResultList();
 
         if (list.isEmpty()) {
+            // якщо ще не ставив — створюємо новий запис
             entityManager.persist(rating);
         } else {
+            // якщо вже ставив — оновлюємо значення
             Rating existing = list.get(0);
             existing.setRating(rating.getRating());
             existing.setRatedOn(rating.getRatedOn());

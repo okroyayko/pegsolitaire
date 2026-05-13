@@ -45,6 +45,7 @@
       font-weight: bold;
       margin-bottom: 10px;
       text-align: center;
+      min-height: 18px;
     }
   </style>
 </head>
@@ -55,7 +56,7 @@
 
   <!-- Error message -->
   <div class="error">
-    <th:block th:if="${param.error} == 'exists'">
+    <th:block th:if="${param.error != null and param.error[0] == 'exists'}">
       Username is already taken
     </th:block>
   </div>

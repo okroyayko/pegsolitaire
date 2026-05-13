@@ -15,7 +15,7 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String login() {
         return "login";
     }
 
@@ -34,13 +34,7 @@ public class LoginController {
         }
 
         session.setAttribute("user", username);
+
         return "redirect:/pegsolitaire";
-    }
-
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
     }
 }

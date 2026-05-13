@@ -41,64 +41,116 @@ public class PegSolitaireController {
         return field;
     }
 
+    // MAIN PAGE
     @GetMapping
     public String gamePage(@RequestParam(defaultValue = "pegsolitaire") String game,
                            HttpSession session,
                            Model model) {
 
-        // Якщо не залогінений → на логін
-        if (session.getAttribute("user") == null) {
+        String username = (String) session.getAttribute("user");
+
+        // Якщо не увійшов → редірект на логін
+        if (username == null) {
             return "redirect:/login";
         }
 
-        // Поле
-        Field field = getField(session);
-        Tile[][] tiles = field.getTiles();
-        model.addAttribute("board", tiles);
+        // Rating
+        int userRating = ratingService.getRating(game, username);
+        model.addAttribute("userRating", userRating);
+        model.addAttribute("averageRating", ratingService.getAverageRating(game));
 
-        // Дані для панелей
+        // Comment
+        boolean hasComment = commentService.getCommentByPlayer(game, username) != null;
+        model.addAttribute("hasComment", hasComment);
+
+        // Game board
+        Field field = getField(session);
+        model.addAttribute("board", field.getTiles());
+
+        // Other
         model.addAttribute("game", game);
         model.addAttribute("scores", scoreService.getTopScores(game));
         model.addAttribute("comments", commentService.getComments(game));
-
-        int avg = 0;
-        try {
-            avg = ratingService.getAverageRating(game);
-        } catch (Exception ignored) {}
-        model.addAttribute("averageRating", avg);
-
-        // Ім’я гравця тепер береться з сесії
-        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("user", username);
 
         return "pegsolitaire";
     }
 
+    // ADD COMMENT
     @PostMapping("/comment")
     public String addComment(@RequestParam String game,
                              @RequestParam String text,
                              HttpSession session) {
 
         String user = (String) session.getAttribute("user");
-        if (user == null) user = "Anonymous";
+        if (user == null) return "redirect:/login";
+
+        Comment existing = commentService.getCommentByPlayer(game, user);
+        if (existing != null) {
+            return "redirect:/pegsolitaire?game=" + game + "&error=already_commented";
+        }
 
         commentService.addComment(new Comment(game, user, text, new Date()));
+        return "redirect:/pegsolitaire?game=" + game;
+    }
+
+    // EDIT COMMENT
+    @PostMapping("/comment/edit")
+    public String editComment(@RequestParam String game,
+                              @RequestParam String text,
+                              HttpSession session) {
+
+        String user = (String) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        Comment existing = commentService.getCommentByPlayer(game, user);
+        if (existing != null) {
+            existing.setComment(text);
+            existing.setCommentedOn(new Date());
+            commentService.updateComment(existing);
+        }
 
         return "redirect:/pegsolitaire?game=" + game;
     }
 
+    // DELETE COMMENT
+    @PostMapping("/comment/delete")
+    public String deleteComment(@RequestParam String game,
+                                HttpSession session) {
+
+        String user = (String) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        commentService.deleteComment(game, user);
+
+        return "redirect:/pegsolitaire?game=" + game;
+    }
+
+    // RATE
     @PostMapping("/rate")
-    public String rate(@RequestParam String game,
-                       @RequestParam int rating,
+    public String rate(@RequestParam(required = false) Integer rating,
+                       @RequestParam String game,
                        HttpSession session) {
 
         String user = (String) session.getAttribute("user");
-        if (user == null) user = "Anonymous";
+        if (user == null) return "redirect:/login";
 
-        ratingService.setRating(new Rating(game, user, rating, new Date()));
+        if (rating == null || rating < 1 || rating > 5) {
+            return "redirect:/pegsolitaire?error=invalidRating";
+        }
+
+        Rating r = new Rating();
+        r.setGame(game);
+        r.setPlayer(user);
+        r.setRating(rating);
+        r.setRatedOn(new Date());
+
+        ratingService.setRating(r);
 
         return "redirect:/pegsolitaire?game=" + game;
     }
 
+    // NEW GAME
     @PostMapping("/new")
     public String newGame(HttpSession session) {
         session.removeAttribute("field");

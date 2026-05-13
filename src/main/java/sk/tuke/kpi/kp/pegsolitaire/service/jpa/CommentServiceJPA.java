@@ -30,6 +30,31 @@ public class CommentServiceJPA implements CommentService {
     }
 
     @Override
+    public Comment getCommentByPlayer(String game, String player) {
+        List<Comment> list = entityManager
+                .createQuery("SELECT c FROM Comment c WHERE c.game = :game AND c.player = :player", Comment.class)
+                .setParameter("game", game)
+                .setParameter("player", player)
+                .getResultList();
+
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public void updateComment(Comment comment) {
+        entityManager.merge(comment);
+    }
+
+    @Override
+    public void deleteComment(String game, String player) {
+        entityManager
+                .createQuery("DELETE FROM Comment c WHERE c.game = :game AND c.player = :player")
+                .setParameter("game", game)
+                .setParameter("player", player)
+                .executeUpdate();
+    }
+
+    @Override
     public void reset() {
         entityManager
                 .createNamedQuery("Comment.resetComments")

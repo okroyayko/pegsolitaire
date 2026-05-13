@@ -45,6 +45,7 @@
             font-weight: bold;
             margin-bottom: 10px;
             text-align: center;
+            min-height: 18px;
         }
     </style>
 </head>
@@ -55,11 +56,11 @@
 
     <!-- Error messages -->
     <div class="error">
-        <th:block th:if="${param.error} == 'no_user'">
+        <th:block th:if="${param.error != null and param.error[0] == 'no_user'}">
             User does not exist
         </th:block>
 
-        <th:block th:if="${param.error} == 'bad_password'">
+        <th:block th:if="${param.error != null and param.error[0] == 'bad_password'}">
             Incorrect password
         </th:block>
     </div>

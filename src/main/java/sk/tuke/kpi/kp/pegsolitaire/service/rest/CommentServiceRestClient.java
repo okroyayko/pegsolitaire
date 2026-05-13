@@ -23,6 +23,22 @@ public class CommentServiceRestClient implements CommentService {
         Comment[] comments = restTemplate.getForObject(URL + "/" + game, Comment[].class);
         return Arrays.asList(comments);
     }
+    @Override
+    public Comment getCommentByPlayer(String game, String player) {
+        // REST client does not support this operation
+        return null;
+    }
+
+    @Override
+    public void updateComment(Comment comment) {
+        // REST client does not support this operation
+    }
+
+    @Override
+    public void deleteComment(String game, String player) {
+        // REST client does not support this operation
+    }
+
 
     @Override
     public void reset() {

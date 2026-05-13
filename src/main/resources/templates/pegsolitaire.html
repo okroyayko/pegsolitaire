@@ -7,6 +7,40 @@
     <link rel="stylesheet" href="/css/game.css">
 
     <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: #222;
+            padding: 25px;
+            border-radius: 10px;
+            color: #eee;
+            text-align: center;
+            width: 300px;
+            border: 2px solid #4caf50;
+        }
+
+        .modal-content button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #4caf50;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         .theme-btn {
             margin-left: auto;
             margin-right: 70px;
@@ -18,12 +52,6 @@
             border-radius: 50%;
             cursor: pointer;
             transition: 0.25s ease;
-        }
-
-        .theme-btn:hover {
-            background: #444;
-            border-color: #888;
-            transform: scale(1.1);
         }
 
         body {
@@ -96,10 +124,6 @@
             margin-top: 8px;
         }
 
-        button:hover {
-            background: #000;
-        }
-
         .tile {
             width: 45px;
             height: 45px;
@@ -112,17 +136,54 @@
         .empty { background: black; }
         .blocked { background: transparent; }
 
-        .tile.selected {
-            outline: 2px solid #00aaff;
-        }
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                gap: 15px;
+            }
 
-        .tile.highlight {
-            outline: 2px solid #ffaa00;
+            #board {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+
+            .tile {
+                width: calc(14vw);
+                height: calc(14vw);
+                margin: 2px;
+            }
+
+            button {
+                width: 100%;
+                font-size: 18px;
+                padding: 12px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .title {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
 
 <body>
+
+<div id="gameMessage" class="modal">
+    <div class="modal-content">
+        <p id="gameMessageText"></p>
+        <button type="button" onclick="closeMessage()">OK</button>
+    </div>
+</div>
 
 <div class="topbar">
     <img src="/logo.png" alt="Logo" class="logo">
@@ -169,34 +230,68 @@
             </select>
         </div>
 
-        <!-- JS малює дошку -->
         <div id="board"></div>
     </div>
 
     <!-- RIGHT PANEL -->
     <div class="panel">
+
         <h2>Comments</h2>
+
         <ul>
-            <li th:each="c : ${comments}"
-                th:text="${c.player} + ': ' + ${c.comment}">comment</li>
+            <li th:each="c : ${comments}">
+                <span th:text="${c.player} + ': ' + ${c.comment}"></span>
+
+                <span th:if="${c.player == user}">
+                    <form th:action="@{/pegsolitaire/comment/delete}" method="post" style="display:inline;">
+                        <input type="hidden" name="game" th:value="${game}">
+                        <button type="submit" style="color:red;">Delete</button>
+                    </form>
+
+                    <form th:action="@{/pegsolitaire/comment/edit}" method="post" style="display:inline;">
+                        <input type="hidden" name="game" th:value="${game}">
+                        <input type="text" name="text" placeholder="Edit comment">
+                        <button type="submit">Save</button>
+                    </form>
+                </span>
+            </li>
         </ul>
 
-        <form th:action="@{/pegsolitaire/comment}" method="post">
-            <input type="hidden" name="game" th:value="${game}">
-            <label>New comment:</label>
-            <input type="text" name="text">
-            <button type="submit">Add</button>
-        </form>
+        <div th:if="${!hasComment}">
+            <form th:action="@{/pegsolitaire/comment}" method="post">
+                <input type="hidden" name="game" th:value="${game}">
+                <label>New comment:</label>
+                <input type="text" name="text">
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <div th:if="${hasComment}">
+            <p>You already posted a comment.</p>
+        </div>
 
         <h2>Rating</h2>
+
         <p>Average rating: <strong th:text="${averageRating}">0</strong></p>
 
-        <form th:action="@{/pegsolitaire/rate}" method="post">
-            <input type="hidden" name="game" th:value="${game}">
-            <label>Rate (1–5):</label>
-            <input type="number" name="rating" min="1" max="5">
-            <button type="submit">Rate</button>
-        </form>
+        <p>Your rating:
+            <strong th:if="${userRating > 0}" th:text="${userRating}"></strong>
+            <span th:if="${userRating == 0}">You haven't rated yet</span>
+        </p>
+
+        <div th:if="${user != null}">
+            <form th:action="@{/pegsolitaire/rate}" method="post">
+                <input type="hidden" name="game" th:value="${game}">
+                <label>Rate (1–5):</label>
+                <input type="number" name="rating" min="1" max="5" th:value="${userRating}">
+                <button type="submit">Save rating</button>
+            </form>
+        </div>
+
+        <div th:if="${user == null}">
+            <p>You must log in to rate the game.</p>
+        </div>
+
     </div>
 
 </div>
